@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Title Here</title>
+    <!-- Your CSS stylesheets can be linked here -->
+    <!-- Example: <link rel="stylesheet" href="styles.css"> -->
+    <!-- Any additional meta tags, stylesheets, or scripts can be added here -->
+</head>
+<body>
+    <h1>Hello</h1>
+    <p>Here is the homepage</p>
+    <ul>
+        {% for lead in leads %}
+        <li>{{ lead }}</li>
+        {% endfor %}
+    </ul>
+    <!-- Your content goes here -->
+
+    <!-- Your JavaScript scripts can be included here -->
+    <!-- Example: <script src="script.js"></script> -->
+</body>
+</html>
