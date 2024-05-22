@@ -27,7 +27,7 @@ class Lead(models.Model):
     age = models.IntegerField(default=0)
     organisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     agent = models.ForeignKey("Agent", null=True, blank=True, on_delete=models.SET_NULL)
-
+    category = models.ForeignKey("Category", related_name="leads", null=True, blank=True, on_delete=models.SET_NULL)
     # phoned = models.BooleanField(default=False)
     # source = models.CharField(choices=SOURCE_CHOICES, max_length=100)
 
@@ -48,7 +48,13 @@ class Agent(models.Model):
 
     def __str__(self):
         return self.user.email
-    
+
+class Category(models.Model):
+    name = models.CharField(max_length=30)  # New, Contacted, Converted, Unconverted
+    organisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
 
 def post_user_created_signal(sender, instance, created, **kwargs):
     print(instance, created)
