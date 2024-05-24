@@ -352,7 +352,8 @@ class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
     def form_valid(self, form):
         lead_before_update = self.get_object()
         instance = form.save(commit=False)
-        converted_category = Category.objects.get(name="Converted")
+        # TO UPDATE
+        converted_category = Category.objects.get(name="Whatever")
         if form.cleaned_data["category"] == converted_category:
             # update the date at which this lead was converted
             if lead_before_update.category != converted_category:
