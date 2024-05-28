@@ -1,8 +1,10 @@
 from django import forms
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UsernameField
-from .models import Lead, Agent, Category, FollowUp
+from .models import Lead, Agent, FollowUp, CaseField, CaseValue, Manager, handle_upload_follow_ups
+import os
 
 User = get_user_model()
 
@@ -13,40 +15,174 @@ class LeadModelForm(forms.ModelForm):
         fields = (
             'first_name',
             'last_name',
-            'age',
-            'agent',
-            'description',
-            'phone_number',
             'email',
-            'profile_picture'
+            'phone_number',
+            'description',
         )
 
-    def clean_first_name(self):
-        data = self.cleaned_data["first_name"]
-        # if data != "Joe":
-        #     raise ValidationError("Your name is not Joe")
-        return data
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        instance = kwargs.get('instance') 
+        super(LeadModelForm, self).__init__(*args, **kwargs)
+        
+        up = None
 
-    def clean(self):
-        pass
-        # first_name = self.cleaned_data["first_name"]
-        # last_name = self.cleaned_data["last_name"]
-        # if first_name + last_name != "Joe Soap":
-        #     raise ValidationError("Your name is not Joe Soap")
+        if self.user.is_lvl3:
+            up = self.user.userprofile
+        elif self.user.is_lvl2:
+            up = self.user.manager.organisation
+        elif self.user.is_lvl1:
+            up = self.user.agent.organisation
+
+        additional_fields = CaseField.objects.filter(user=up)
+        for field in additional_fields:
+            if field.field_type == 'text':
+                self.fields[field.name] = forms.CharField(label=field.name, required=False)
+            elif field.field_type == 'number':
+                self.fields[field.name] = forms.IntegerField(label=field.name, required=False)
+            elif field.field_type == 'date':
+                self.fields[field.name] = forms.DateField(label=field.name, required=False)
+            # Add more field types as needed
+        
+        if instance:
+            for case_value in instance.extrafields.all():
+                if case_value.field.field_type == 'text':
+                    self.initial[case_value.field.name] = case_value.value_text
+                elif case_value.field.field_type == 'number':
+                    self.initial[case_value.field.name] = case_value.value_number
+                elif case_value.field.field_type == 'date':
+                    self.initial[case_value.field.name] = case_value.value_date
+
+    def save(self, commit=True):
+        Lead = super(LeadModelForm, self).save(commit=False)
+        if commit:
+            up = None
+
+            if self.user.is_lvl3:
+                up = self.user.userprofile
+            elif self.user.is_lvl2:
+                up = self.user.manager.organisation
+            elif self.user.is_lvl1:
+                up = self.user.agent.organisation
+
+            for field in CaseField.objects.filter(user=up):
+                field_name = field.name
+                value = self.cleaned_data[field_name]
+                case_value, created = CaseValue.objects.get_or_create(lead=Lead, field=field)
+                if field.field_type == 'text':
+                    case_value.value_text = value
+                elif field.field_type == 'number':
+                    case_value.value_number = value
+                elif field.field_type == 'date':
+                    case_value.value_date = value
+                case_value.save()
+        return Lead
 
 
+class LeadUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Lead
+        fields = (
+            'first_name',
+            'last_name',
+            'email',
+            'phone_number',
+            'description',
+        )
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        instance = kwargs.get('instance') 
+        super(LeadUpdateForm, self).__init__(*args, **kwargs)
+        
+        up = None
+
+        if self.user.is_lvl3:
+            up = self.user.userprofile
+            # Add quote and commission fields for lvl3 users
+            self.fields['quote'] = forms.IntegerField(label='Quote', required=True, initial=instance.quote if instance else None)
+            self.fields['commission'] = forms.IntegerField(label='Commission', required=True, initial=instance.commission if instance else None)
+
+            self.fields['agent'] = forms.ModelChoiceField(queryset=Agent.objects.filter(organisation=up), initial=instance.agent, required=False)
+            self.fields['manager'] = forms.ModelChoiceField(queryset=Manager.objects.filter(organisation=up), initial=instance.manager, required=False)
+
+        elif self.user.is_lvl2:
+            up = self.user.manager.organisation
+            self.fields['completed'] = forms.BooleanField(label='Completed', required=False, initial=instance.completed if instance else False)
+
+        elif self.user.is_lvl1:
+            up = self.user.agent.organisation
+
+        additional_fields = CaseField.objects.filter(user=up)
+        for field in additional_fields:
+            if field.field_type == 'text':
+                self.fields[field.name] = forms.CharField(label=field.name, required=False)
+            elif field.field_type == 'number':
+                self.fields[field.name] = forms.IntegerField(label=field.name, required=False)
+            elif field.field_type == 'date':
+                self.fields[field.name] = forms.DateField(label=field.name, required=False)
+            # Add more field types as needed
+        
+        if instance:
+            for case_value in instance.extrafields.all():
+                if case_value.field.field_type == 'text':
+                    self.initial[case_value.field.name] = case_value.value_text
+                elif case_value.field.field_type == 'number':
+                    self.initial[case_value.field.name] = case_value.value_number
+                elif case_value.field.field_type == 'date':
+                    self.initial[case_value.field.name] = case_value.value_date
+
+    def save(self, commit=True):
+        Lead = super(LeadUpdateForm, self).save(commit=True)
+        if commit:
+            up = None
+
+            if self.user.is_lvl3:
+                up = self.user.userprofile
+            elif self.user.is_lvl2:
+                up = self.user.manager.organisation
+            elif self.user.is_lvl1:
+                up = self.user.agent.organisation
+
+            nonp = []
+            for field in CaseField.objects.filter(user=up):
+                field_name = field.name
+                nonp.append(field_name)
+                value = self.cleaned_data[field_name]
+                case_value, created = CaseValue.objects.get_or_create(lead=Lead, field=field) # !
+                if field.field_type == 'text':
+                    case_value.value_text = value
+                elif field.field_type == 'number':
+                    case_value.value_number = value
+                elif field.field_type == 'date':
+                    case_value.value_date = value
+                case_value.save()
+
+            for field_name in [f.name for f in Lead._meta.get_fields() if f.name not in nonp]:
+                if field_name in self.cleaned_data:  # Check if the field is present in the cleaned data
+                    setattr(Lead, field_name, self.cleaned_data[field_name])
+            
+        return Lead
+
+class FollowUpModelForm(forms.ModelForm):
+    class Meta:
+        model = FollowUp
+        fields = (
+            'notes',
+            'file'
+        )
+
+class FollowUpUpdateModelForm(forms.ModelForm):
+    class Meta:
+        model = FollowUp
+        fields = (
+            'notes',
+        )
 
 class LeadForm(forms.Form):
     first_name = forms.CharField()
     last_name = forms.CharField()
     age = forms.IntegerField(min_value=0)
-
-
-class CustomUserCreationForm(UserCreationForm):
-    class Meta:
-        model = User
-        fields = ("username",)
-        field_classes = {'username': UsernameField}
 
 
 class AssignAgentForm(forms.Form):
@@ -57,28 +193,3 @@ class AssignAgentForm(forms.Form):
         agents = Agent.objects.filter(organisation=request.user.userprofile)
         super(AssignAgentForm, self).__init__(*args, **kwargs)
         self.fields["agent"].queryset = agents
-
-
-class LeadCategoryUpdateForm(forms.ModelForm):
-    class Meta:
-        model = Lead
-        fields = (
-            'category',
-        )
-
-
-class CategoryModelForm(forms.ModelForm):
-    class Meta:
-        model = Category
-        fields = (
-            'name',
-        )
-
-
-class FollowUpModelForm(forms.ModelForm):
-    class Meta:
-        model = FollowUp
-        fields = (
-            'notes',
-            'file'
-        )

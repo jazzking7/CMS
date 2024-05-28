@@ -2,19 +2,15 @@
 {% load tailwind_filters %}
 
 {% block content %}
-
 <div class="max-w-lg mx-auto">
-
     <div class="py-5 border-b border-gray-200">
-        <a class="hover:text-blue-500" href="{% url 'agents:user-list' %}">Go back to users</a>
+        <a class="hover:text-blue-500" href="{% url 'leads:casefield-list' %}">回到字段列表</a>
     </div>
-
-    <h1 class="text-4xl text-gray-800">Create a new user</h1>
-    <form method="post">
+    <h1 class="text-3xl text-gray-800">确定删除? 所有相关数据都会被移除</h1>
+    <form method="post" class="mt-5">
         {% csrf_token %}
         {{ form|crispy }}
         <button type="submit" class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Submit</button>
     </form>
-
 </div>
 {% endblock content %}

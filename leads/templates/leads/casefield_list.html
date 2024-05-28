@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="text-gray-600 body-font overflow-hidden">
+    <div class="container px-5 py-24 mx-auto">
+      <div class="-my-8 divide-y-2 divide-gray-100">
+        <div>
+            <h1 class="text-3xl text-gray-800 mb-4">自定字段</h1>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {% for casefield in casefields %}
+                <div class="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex flex-col items-center justify-center">
+                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-800 dark:text-white text-center">{{ casefield.name }}</h5>
+                    <p class="mb-3 font-normal text-gray-700 dark:text-gray-400 text-center">类型: {{ casefield.field_type }}</p>
+                    <a href="{% url 'leads:casefield-delete' casefield.pk %}" class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-500 rounded-lg hover:bg-red-500 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-red-500 dark:focus:ring-blue-800">
+                        删除
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div id="addFieldForm" class="p-4 bg-white border border-gray-300 shadow-lg rounded-lg" style="position: fixed; 
+            top: 50%; left: 50%; transform: translate(-50%, -50%); z-index:1000; display:None;">
+                <form method="post" action="{% url 'leads:create-field' %}" class="space-y-4">
+                    {% csrf_token %}
+                    <div>
+                        <label for="fieldType" class="block text-sm font-medium text-gray-700">Field Type:</label>
+                        <select id="fieldType" name="fieldType" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                            <option value="text">Text</option>
+                            <option value="number">Number</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="fieldName" class="block text-sm font-medium text-gray-700">Field Name:</label>
+                        <input type="text" id="fieldName" name="fieldName" class="mt-1 block-1 w-full rounded-md border-gray-300 shadow-sm p-2 focus:ring-indigo-500 sm:text-sm">
+                    </div>
+                    <div class="flex justify-center">
+                        <input type="submit" value="Submit" id="addFieldbtn" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    </div>
+                </form>
+        </div>
+
+        <div class="relative px-6 py-3 text-blue-800 hover:text-blue-500 cursor-pointer" id="addfield">
+            <h1 class="text-3xl text-gray-800 mb-4">+</h1>
+        </div>
+        
+
+      </div>
+    </div>
+  </section>
+
+{% endblock content %}
