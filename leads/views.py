@@ -17,10 +17,6 @@ from .forms import (
     FollowUpUpdateModelForm
 )
 
-
-
-# CRUD+L - Create, Retrieve, Update and Delete + List
-
 class LandingPageView(generic.TemplateView):
     template_name = "landing.html"
 
@@ -59,15 +55,6 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super(LeadListView, self).get_context_data(**kwargs)
-        # user = self.request.user
-        # if user.is_lvl2:
-        #     queryset = Lead.objects.filter(
-        #         organisation=user.userprofile, 
-        #         agent__isnull=True
-        #     )
-        #     context.update({
-        #         "unassigned_leads": queryset
-        #     })
         lead_fields = []
         case_field_names = []
         leads_data = []
@@ -151,12 +138,12 @@ class LeadCreateView(AgentAndLoginRequiredMixin, generic.CreateView):
         lead.agent = self.request.user.agent
         lead.organisation = self.request.user.agent.organisation
         lead.save()
-        send_mail(
-            subject="A lead has been created",
-            message="Go to the site to see the new lead",
-            from_email="test@test.com",
-            recipient_list=["test2@test.com"]
-        )
+        # send_mail(
+        #     subject="A lead has been created",
+        #     message="Go to the site to see the new lead",
+        #     from_email="test@test.com",
+        #     recipient_list=["test2@test.com"]
+        # )
         messages.success(self.request, "You have successfully created a lead")
         return super(LeadCreateView, self).form_valid(form)
 

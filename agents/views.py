@@ -58,12 +58,12 @@ class AgentCreateView(SupervisorAndLoginRequiredMixin, generic.CreateView):
                 organisation=organisation
             )
 
-        send_mail(
-            subject="You are invited to join",
-            message="You were added as a user on DJCRM. Please come login to start working.",
-            from_email="admin@test.com",
-            recipient_list=[user.email]
-        )
+        # send_mail(
+        #     subject="You are invited to join",
+        #     message="You were added as a user on DJCRM. Please come login to start working.",
+        #     from_email="admin@test.com",
+        #     recipient_list=[user.email]
+        # )
         return super(AgentCreateView, self).form_valid(form)
 
 
@@ -281,12 +281,12 @@ class UserCreateView(SuperAdminAndLoginRequiredMixin, generic.CreateView):
                 user=user
             )
 
-        send_mail(
-            subject="You are invited to join",
-            message="You were added as a user on DJCRM. Please come login to start working.",
-            from_email="admin@test.com",
-            recipient_list=[user.email]
-        )
+        # send_mail(
+        #     subject="You are invited to join",
+        #     message="You were added as a user on DJCRM. Please come login to start working.",
+        #     from_email="admin@test.com",
+        #     recipient_list=[user.email]
+        # )
         return super(UserCreateView, self).form_valid(form)
 
 class UserDetailView(SuperAdminAndLoginRequiredMixin, generic.DetailView):
