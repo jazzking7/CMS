@@ -10,9 +10,12 @@
             </div>
             {% if request.user.is_lvl1 %}
             <div>
-                <a class="text-gray-500 hover:text-blue-500" href="{% url 'leads:lead-create' %}">
-                    Create a new case
-                </a>
+                <div class="card-toolbar">
+                    <button type="button" class="btn btn-light-primary" onclick="window.location.href=`{% url 'leads:lead-create' %}`;">
+                        <i class="fa fa-plus" style="font-size:14px;"></i>
+                            Create a new case
+                        </button>
+                </div>
             </div>
             {% endif %}
         </div>
@@ -23,6 +26,7 @@
             <input type="text" data-kt-permissions-table-filter="search"
                 class="form-control form-control-solid w-250px ps-13 p-1 mb-1" placeholder="搜索" />
         </div>
+
 
         <div class="flex flex-col w-full">
             <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
