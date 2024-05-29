@@ -11,13 +11,11 @@
             {% if request.user.is_lvl1 %}
             <div>
                 <div class="card-toolbar">
-                    <button type="button" class="btn btn-light-primary">
+                    <button type="button" class="btn btn-light-primary" onclick="window.location.href=`{% url 'leads:lead-create' %}`;">
                         <i class="fa fa-plus" style="font-size:14px;"></i>
-                        <a class="text-gray-500 hover:text-blue-500" href="{% url 'leads:lead-create' %}">
                             Create a new case
-                        </a></button>
+                        </button>
                 </div>
-
             </div>
             {% endif %}
         </div>
