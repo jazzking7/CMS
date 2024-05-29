@@ -31,6 +31,7 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
 
     def get_queryset(self):
         user = self.request.user
+        queryset = Lead.objects.all()
         # initial queryset of leads for the entire organisation
         if user.is_lvl4:
             queryset = Lead.objects.all()
