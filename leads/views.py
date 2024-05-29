@@ -1,5 +1,4 @@
 import os
-import logging
 import datetime
 from django import contrib
 from django.contrib import messages
@@ -18,7 +17,7 @@ from .forms import (
     FollowUpUpdateModelForm
 )
 
-logger = logging.getLogger(__name__)
+
 
 # CRUD+L - Create, Retrieve, Update and Delete + List
 
@@ -100,7 +99,6 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
                         lead_data[case_field.name] = None
                 lead_data['pk'] = lead.id
                 leads_data.append(lead_data)
-        print(leads_data)
         context.update({
             "basic_fields": lead_fields,
             "lead_fields": lead_fields + case_field_names,

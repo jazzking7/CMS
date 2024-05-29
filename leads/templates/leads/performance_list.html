@@ -5,12 +5,19 @@
 <section class="text-gray-700 body-font">
     <div class="container px-5 py-24 mx-auto flex flex-wrap">
 
+        <div class="d-flex align-items-center position-relative my-1 me-5">
+            <i class="fa fa-search fs-3 position-absolute ms-5" style="font-size:20px;">
+            </i>
+            <input type="text" data-kt-permissions-table-filter="search"
+                class="form-control form-control-solid w-250px ps-13 p-1 mb-1" placeholder="搜索" />
+        </div>
+
         <div class="flex flex-col w-full">
             <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                     <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
 
-                        <table class="min-w-full divide-y divide-gray-200">
+                        <table class="min-w-full divide-y divide-gray-200" id="kt_permissions_table">
                             <thead class="bg-gray-50">
                                 <tr>
 
