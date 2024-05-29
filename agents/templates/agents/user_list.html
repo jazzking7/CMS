@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <section class="text-gray-700 body-font">
+        <div class=" px-5 py-24 mx-auto flex flex-wrap">
+            <div class="w-full mb-6 py-6 flex justify-between items-center border-b border-gray-200">
+                <div>
+                    <h1 class="text-4xl text-gray-800">Users</h1>
+                </div>
+                <div>
+                    <a class="text-gray-500 hover:text-blue-500" href="{% url 'agents:user-create' %}">Create a new user</a>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center position-relative my-1 me-5">
+                <i class="fa fa-search fs-3 position-absolute ms-5" style="font-size:20px;">
+                </i>
+                <input type="text" data-kt-permissions-table-filter="search"
+                    class="form-control form-control-solid w-250px ps-13 p-1 mb-1" placeholder="搜索" />
+            </div>
+
+            <div class="flex flex-col w-full">
+                <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                    <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                    <table class="min-w-full divide-y divide-gray-200" id="kt_permissions_table">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Full Name
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Email
+                                </th>
+                                <th scope="col" class="relative px-6 py-3">
+                                <span class="sr-only">Edit</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                                <tr class="bg-white">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        <a href="{% url 'agents:user-detail' user.pk %}" class="text-indigo-600 hover:text-indigo-900">
+                                            {{ user.first_name }} {{ user.last_name }}
+                                        </a>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ user.email }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <a href="{% url 'agents:user-update' user.pk %}" class="text-indigo-600 hover:text-indigo-900">
+                                            Edit
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% empty %}
+
+                            <p>There are currently no users</p>
+
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+        </div>
+      </section>
+{% endblock content %}

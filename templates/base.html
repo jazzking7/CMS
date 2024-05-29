@@ -6,11 +6,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DJCRM</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+    <link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet">
+    <!-- <link href="{% static 'css/datatables.bundle.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'css/plugins.bundle.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'css/style.bundle.css' %}" rel="stylesheet" type="text/css" /> -->
+
+    <script src="{% static 'js/plugins.bundle.js' %}"></script>
+    <script src="{% static 'js/scripts.bundle.js' %}"></script>
+    <script src="{% static 'js/datatables.bundle.js' %}"></script>
+    <script src="{% static 'js/list.js' %}"></script>
+
+    <style>
+        .dataTables_length {
+            margin-top: 8px; 
+            margin-left: 4px; 
+        }
+    </style>
+
 </head>
 <body>
-    <div class="max-w-7xl mx-auto">
+    <div class="w-full">
         {% include 'navbar.html' %}
         {% block content %}
         {% endblock content %}

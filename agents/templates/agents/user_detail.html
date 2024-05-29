@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="text-gray-700 body-font overflow-hidden">
+    <div class=" px-5 py-24 mx-auto">
+      <div class="lg:w-4/5 mx-auto flex flex-wrap">
+        <div class="w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
+            <h2 class="text-sm title-font text-gray-500 tracking-widest">USER</h2>
+            <h1 class="text-gray-900 text-3xl title-font font-medium mb-4">{{ show_user.username }}</h1>
+            <div class="flex mb-4">
+                <a href="{% url 'agents:user-detail' show_user.pk %}" class="flex-grow text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-1">
+                    Overview
+                </a>
+                <a href="{% url 'agents:user-update' show_user.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">
+                    Update Details
+                </a>    
+            </div>
+            <div class="flex border-t border-gray-300 py-2">
+                <span class="text-gray-500">Full Name</span>
+                <span class="ml-auto text-gray-900">{{ show_user.first_name }} {{ show_user.last_name }}</span>
+            </div>
+            <div class="flex border-t border-gray-300 py-2">
+                <span class="text-gray-500">Email</span>
+                <span class="ml-auto text-gray-900">{{ show_user.email }}</span>
+            </div>
+            <div class="flex border-t border-gray-300 py-2">
+                <span class="text-gray-500">Username</span>
+                <span class="ml-auto text-gray-900">{{ show_user.username }}</span>
+            </div>
+            <div class="flex border-t border-gray-300 py-2">
+                <span class="text-gray-500">User Permission Level</span>
+                {% if show_user.is_lvl4 %}
+                <span class="ml-auto text-gray-900">{{ 4 }}</span>
+                {% elif show_user.is_lvl2 %}
+                <span class="ml-auto text-gray-900">{{ 2 }}</span>
+                {% elif show_user.is_lvl3 %}
+                <span class="ml-auto text-gray-900">{{ 3 }}</span>
+                {% elif show_user.is_lvl1 %}
+                <span class="ml-auto text-gray-900">{{ 1 }}</span>
+                {% endif %}
+            </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock content %}

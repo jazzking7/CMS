@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     'crispy_tailwind',
 
     'leads',
-    'agents'
+    'agents',
 ]
 
 MIDDLEWARE = [
@@ -161,6 +161,10 @@ LOGOUT_REDIRECT_URL = "/"
 
 CRISPY_TEMPLATE_PACK = 'tailwind'
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'tailwind'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media' 
+
 
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
