@@ -7,7 +7,7 @@ from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic, View
-from agents.mixins import OrganisorAndLoginRequiredMixin, AgentAndLoginRequiredMixin,SupervisorAndLoginRequiredMixin
+from agents.mixins import OrganisorAndLoginRequiredMixin, AgentAndLoginRequiredMixin,SupervisorAndLoginRequiredMixin, NotSuperuserAndLoginRequiredMixin
 from .models import Lead, FollowUp, CaseField, CaseValue, Agent
 from .forms import (
     LeadModelForm, 
@@ -147,7 +147,7 @@ class LeadCreateView(AgentAndLoginRequiredMixin, generic.CreateView):
         messages.success(self.request, "You have successfully created a lead")
         return super(LeadCreateView, self).form_valid(form)
 
-class LeadUpdateView(LoginRequiredMixin, generic.UpdateView):
+class LeadUpdateView(NotSuperuserAndLoginRequiredMixin, generic.UpdateView):
     template_name = "leads/lead_update.html"
     form_class = LeadUpdateForm
 

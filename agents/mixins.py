@@ -28,3 +28,10 @@ class SuperAdminAndLoginRequiredMixin(AccessMixin):
         if not request.user.is_authenticated or not request.user.is_lvl4:
             return redirect("leads:lead-list")
         return super().dispatch(request, *args, **kwargs)
+
+class NotSuperuserAndLoginRequiredMixin(AccessMixin):
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated or request.user.is_lvl4:
+            return redirect("leads:lead-list")
+        return super().dispatch(request, *args, **kwargs)

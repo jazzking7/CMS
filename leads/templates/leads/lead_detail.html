@@ -3,7 +3,7 @@
 {% block content %}
 
 <section class="text-gray-700 body-font overflow-hidden">
-    <div class="container px-5 py-24 mx-auto">
+    <div class=" px-5 py-24 mx-auto">
         <div class="lg:w-4/5 mx-auto flex flex-wrap">
             <div class="w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
                 <div class="w-full flex items-center justify-between space-x-6">
@@ -44,7 +44,7 @@
         </div>
 
         {% for followup in lead.followups.all %}
-            <div class="mt-5 shadow px-4 sm:px-6">
+            <div class="container mx-auto shadow px-4 sm:px-6">
                 <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
                     <dt class="text-sm font-medium text-gray-500">
                     Notes (<a href="{% url 'leads:lead-followup-update' followup.pk %}" class="text-blue-500 hover:text-blue-700">update</a>)

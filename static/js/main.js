@@ -12,14 +12,14 @@ $('#addfield').off('click').on('click',function(event){
 });
 
 $(document).ready(function(){
-    // Hide the form container when clicking outside of it
+    // Hide the form  when clicking outside of it
     $(document).on('click', function(event) {
         if (!$(event.target).closest('#addFieldForm, #addfield').length) {
             $('#addFieldForm').hide();
         }
     });
 
-    // Prevent form container click from hiding it
+    // Prevent form  click from hiding it
     $('#addFieldForm').on('click', function(event) {
         event.stopPropagation(); // Prevent the click from propagating to the document
     });
