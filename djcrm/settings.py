@@ -55,6 +55,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_tailwind',
 
+    'storages',
+
     'leads',
     'agents',
 ]
@@ -163,8 +165,25 @@ LOGOUT_REDIRECT_URL = "/"
 CRISPY_TEMPLATE_PACK = 'tailwind'
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'tailwind'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media' 
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = BASE_DIR / 'media' 
+
+# DigitalOcean Spaces configurations
+AWS_ACCESS_KEY_ID = 'DO00BW9MLHZEG6QU7RKY'
+AWS_SECRET_ACCESS_KEY = 'SfoaYMGrfEdm2ep7YS+mZfVvA8GX9PV2ZcftdoSlRio'
+AWS_STORAGE_BUCKET_NAME = 'open-api-spaces'
+AWS_S3_ENDPOINT_URL = 'https://nyc3.digitaloceanspaces.com'  
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+AWS_LOCATION = 'backup'
+
+# Default file storage
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+# Media settings
+MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 if not DEBUG:
