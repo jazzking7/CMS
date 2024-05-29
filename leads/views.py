@@ -16,6 +16,8 @@ from .forms import (
     LeadUpdateForm,
     FollowUpUpdateModelForm
 )
+import logging
+logger = logging.getLogger(__name__)
 
 class LandingPageView(generic.TemplateView):
     template_name = "landing.html"
