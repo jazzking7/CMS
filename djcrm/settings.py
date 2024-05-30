@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
-
+from botocore.config import Config
 
 import environ
 env = environ.Env(
@@ -169,14 +169,18 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = 'tailwind'
 # MEDIA_ROOT = BASE_DIR / 'media' 
 
 # DigitalOcean Spaces configurations
-AWS_ACCESS_KEY_ID = 'DO00BW9MLHZEG6QU7RKY'
-AWS_SECRET_ACCESS_KEY = 'SfoaYMGrfEdm2ep7YS+mZfVvA8GX9PV2ZcftdoSlRio'
+AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = 'open-api-spaces'
-AWS_S3_ENDPOINT_URL = 'https://nyc3.digitaloceanspaces.com'  
+AWS_S3_ENDPOINT_URL = 'https://urchin-app.nyc3.digitaloceanspaces.com'  
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
-AWS_LOCATION = 'backup'
+
+AWS_DEFAULT_ACL = 'public-read'
+AWS_S3_FILE_OVERWRITE = False
+AWS_QUERYSTRING_AUTH = False
+AWS_S3_SIGNATURE_VERSION = 's3v4'
 
 # Default file storage
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
@@ -200,56 +204,56 @@ if not DEBUG:
 
     ALLOWED_HOSTS = ["*"]
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
-        },
-    },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-        'file_debug': {
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'debug.log'),
-            'formatter': 'verbose',
-            'level': 'DEBUG',
-        },
-        'file_error': {
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'error.log'),
-            'formatter': 'verbose',
-            'level': 'ERROR',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console', 'file_debug', 'file_error'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'django.request': {
-            'handlers': ['console', 'file_error'],
-            'level': 'ERROR',
-            'propagate': False,
-        },
-        'myapp': {  # Replace 'myapp' with your application's name
-            'handlers': ['console', 'file_debug', 'file_error'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-    },
-    'root': {
-        'handlers': ['console', 'file_debug', 'file_error'],
-        'level': 'DEBUG',
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'verbose': {
+#             'format': '{levelname} {asctime} {module} {message}',
+#             'style': '{',
+#         },
+#         'simple': {
+#             'format': '{levelname} {message}',
+#             'style': '{',
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'simple',
+#         },
+#         'file_debug': {
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join(BASE_DIR, 'debug.log'),
+#             'formatter': 'verbose',
+#             'level': 'DEBUG',
+#         },
+#         'file_error': {
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join(BASE_DIR, 'error.log'),
+#             'formatter': 'verbose',
+#             'level': 'ERROR',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console', 'file_debug', 'file_error'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#         'django.request': {
+#             'handlers': ['console', 'file_error'],
+#             'level': 'ERROR',
+#             'propagate': False,
+#         },
+#         'myapp': {  # Replace 'myapp' with your application's name
+#             'handlers': ['console', 'file_debug', 'file_error'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#     },
+#     'root': {
+#         'handlers': ['console', 'file_debug', 'file_error'],
+#         'level': 'DEBUG',
+#     },
+# }

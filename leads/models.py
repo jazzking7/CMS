@@ -91,8 +91,8 @@ def handle_upload_follow_ups(instance, filename):
             modified_filename = f"{name}_{count}{ext}"
             target_file = os.path.join(full_directory, modified_filename)
             count += 1
-
-    return os.path.join(directory, os.path.basename(target_file))
+    result = os.path.join(directory, os.path.basename(target_file))
+    return result
 
 class FollowUp(models.Model):
     lead = models.ForeignKey(Lead, related_name="followups", on_delete=models.CASCADE)

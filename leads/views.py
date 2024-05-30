@@ -16,12 +16,10 @@ from .forms import (
     LeadUpdateForm,
     FollowUpUpdateModelForm
 )
-# import logging
-# logger = logging.getLogger(__name__)
 
-import boto3
-from botocore.exceptions import NoCredentialsError
-from django.conf import settings
+
+import logging
+logger = logging.getLogger(__name__)
 
 class LandingPageView(generic.TemplateView):
     template_name = "landing.html"
@@ -199,31 +197,6 @@ class LeadDeleteView(OrganisorAndLoginRequiredMixin, generic.DeleteView):
         # initial queryset of leads for the entire organisation
         return Lead.objects.filter(organisation=up)
 
-def upload_to_spaces(file_path, bucket_name, object_name=None):
-    if object_name is None:
-        object_name = file_path.split('/')[-1]
-
-    # Create an S3 client
-    s3_client = boto3.client(
-        's3',
-        endpoint_url=settings.AWS_S3_ENDPOINT_URL,
-        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
-    )
-
-    try:
-        # Uploads the given file using a managed uploader, which will split up the file
-        # if it's large and uploads parts in parallel.
-        response = s3_client.upload_file(
-            file_path,
-            bucket_name,
-            object_name,
-            ExtraArgs={'ACL': 'public-read'}  # Set ACL to public-read for public access
-        )
-
-    except NoCredentialsError:
-        print("Credentials not available")
-
 class FollowUpCreateView(LoginRequiredMixin, generic.CreateView):
     template_name = "leads/followup_create.html"
     form_class = FollowUpModelForm
@@ -243,9 +216,9 @@ class FollowUpCreateView(LoginRequiredMixin, generic.CreateView):
         followup = form.save(commit=False)
         followup.lead = lead
         followup.save()
-        upload_to_spaces(followup.file.path, settings.AWS_STORAGE_BUCKET_NAME)
+        print(followup.file.url)
         return super(FollowUpCreateView, self).form_valid(form)
-
+    
 class FollowUpUpdateView(LoginRequiredMixin, generic.UpdateView):
     template_name = "leads/followup_update.html"
     form_class = FollowUpUpdateModelForm
@@ -290,18 +263,18 @@ class FollowUpDeleteView(LoginRequiredMixin, generic.DeleteView):
             queryset = queryset.filter(lead__agent__user=user)
         return queryset
     
-    def form_valid(self, form):
-        followup = self.get_object()
-        file_path = followup.file.path if followup.file else None
+    # def form_valid(self, form):
+    #     followup = self.get_object()
+    #     file_path = followup.file.path if followup.file else None
         
-        # Delete the followup object
-        response = super().form_valid(form)
+    #     # Delete the followup object
+    #     response = super().form_valid(form)
         
-        # If there is a file associated, remove it from the filesystem
-        if file_path and os.path.exists(file_path):
-            os.remove(file_path)
+    #     # If there is a file associated, remove it from the filesystem
+    #     if file_path and os.path.exists(file_path):
+    #         os.remove(file_path)
         
-        return response
+    #     return response
 
 
 class CaseFieldListView(SupervisorAndLoginRequiredMixin, generic.ListView):
