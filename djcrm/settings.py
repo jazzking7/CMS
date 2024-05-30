@@ -169,8 +169,8 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = 'tailwind'
 # MEDIA_ROOT = BASE_DIR / 'media' 
 
 # DigitalOcean Spaces configurations
-AWS_ACCESS_KEY_ID = 'DO00BW9MLHZEG6QU7RKY'
-AWS_SECRET_ACCESS_KEY = 'SfoaYMGrfEdm2ep7YS+mZfVvA8GX9PV2ZcftdoSlRio'
+AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = 'open-api-spaces'
 AWS_S3_ENDPOINT_URL = 'https://urchin-app.nyc3.digitaloceanspaces.com'  
 AWS_S3_OBJECT_PARAMETERS = {
