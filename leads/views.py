@@ -126,7 +126,7 @@ class LeadDetailView(LoginRequiredMixin, generic.DetailView):
             queryset = queryset.filter(agent__user=user)
         return queryset
 
-class LeadCreateView(AgentAndLoginRequiredMixin, generic.CreateView):
+class LeadCreateView(NotSuperuserAndLoginRequiredMixin, generic.CreateView):
     template_name = "leads/lead_create.html"
     form_class = LeadModelForm
 
@@ -140,8 +140,17 @@ class LeadCreateView(AgentAndLoginRequiredMixin, generic.CreateView):
 
     def form_valid(self, form):
         lead = form.save(commit=False)
-        lead.agent = self.request.user.agent
-        lead.organisation = self.request.user.agent.organisation
+        up = None
+        user = self.request.user
+        if user.is_lvl3:
+            up = user.userprofile
+        elif user.is_lvl2:
+            up = user.manager.organisation
+            lead.manager = user.manager
+        elif user.is_lvl1:
+            up = self.user.agent.organisation
+            lead.agent = user.agent
+        lead.organisation = up
         lead.save()
         # send_mail(
         #     subject="A lead has been created",
@@ -152,7 +161,7 @@ class LeadCreateView(AgentAndLoginRequiredMixin, generic.CreateView):
         messages.success(self.request, "You have successfully created a lead")
         return super(LeadCreateView, self).form_valid(form)
 
-class LeadUpdateView(NotSuperuserAndLoginRequiredMixin, generic.UpdateView):
+class LeadUpdateView(LoginRequiredMixin, generic.UpdateView):
     template_name = "leads/lead_update.html"
     form_class = LeadUpdateForm
 
@@ -172,7 +181,10 @@ class LeadUpdateView(NotSuperuserAndLoginRequiredMixin, generic.UpdateView):
         elif user.is_lvl1:
             up = user.agent.organisation
 
-        return Lead.objects.filter(organisation=up)
+        if user.is_lvl3 or user.is_lvl2 or user.is_lvl1:
+            return Lead.objects.filter(organisation=up)
+        else:
+            return Lead.objects.all()
 
     def get_success_url(self):
         return reverse("leads:lead-list")
@@ -216,7 +228,7 @@ class FollowUpCreateView(LoginRequiredMixin, generic.CreateView):
         followup = form.save(commit=False)
         followup.lead = lead
         followup.save()
-        print(followup.file.url)
+        # print(followup.file.url)
         return super(FollowUpCreateView, self).form_valid(form)
     
 class FollowUpUpdateView(LoginRequiredMixin, generic.UpdateView):
@@ -348,12 +360,14 @@ class PerformanceListView(LoginRequiredMixin, generic.ListView):
             }
 
         for lead in leads:
+            if lead.status == "取消":
+                continue 
             if lead.agent:
                 agent_info = agent_data[lead.agent]
                 agent_info['num_leads'] += 1
                 commission = int(lead.quote) * (int(lead.commission) / 100)
                 agent_info['total_commission'] += commission
-                if lead.completed:
+                if lead.status=='已完成':
                     agent_info['num_completed_leads'] += 1
                     agent_info['completed_lead_commission'] += commission
 

@@ -92,28 +92,35 @@ class LeadUpdateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')
-        instance = kwargs.get('instance') 
+        self.instance = kwargs.get('instance', None)
+        instance = kwargs.get('instance')
+        org = instance.organisation
         super(LeadUpdateForm, self).__init__(*args, **kwargs)
-        
-        up = None
 
-        if self.user.is_lvl3:
-            up = self.user.userprofile
+        CHOICES = [
+        ('进行中', '进行中'),
+        ('已完成', '已完成'),
+        ('待跟进', '待跟进'),
+        ('取消', '取消'),
+        ]
+        
+        if self.user.is_lvl3 or self.user.is_lvl4:
+
             # Add quote and commission fields for lvl3 users
             self.fields['quote'] = forms.IntegerField(label='Quote', required=True, initial=instance.quote if instance else None)
             self.fields['commission'] = forms.IntegerField(label='Commission', required=True, initial=instance.commission if instance else None)
 
-            self.fields['agent'] = forms.ModelChoiceField(queryset=Agent.objects.filter(organisation=up), initial=instance.agent, required=False)
-            self.fields['manager'] = forms.ModelChoiceField(queryset=Manager.objects.filter(organisation=up), initial=instance.manager, required=False)
+            self.fields['agent'] = forms.ModelChoiceField(queryset=Agent.objects.filter(organisation=org), initial=instance.agent, required=False)
+            self.fields['manager'] = forms.ModelChoiceField(queryset=Manager.objects.filter(organisation=org), initial=instance.manager, required=False)
+   
+        self.fields['status'] = forms.ChoiceField(
+                choices=Lead.STATUS_CHOICES,
+                label='Status',
+                required=False,
+                initial=instance.status
+            )
 
-        elif self.user.is_lvl2:
-            up = self.user.manager.organisation
-            self.fields['completed'] = forms.BooleanField(label='Completed', required=False, initial=instance.completed if instance else False)
-
-        elif self.user.is_lvl1:
-            up = self.user.agent.organisation
-
-        additional_fields = CaseField.objects.filter(user=up)
+        additional_fields = CaseField.objects.filter(user=org)
         for field in additional_fields:
             if field.field_type == 'text':
                 self.fields[field.name] = forms.CharField(label=field.name, required=False)
@@ -135,17 +142,9 @@ class LeadUpdateForm(forms.ModelForm):
     def save(self, commit=True):
         Lead = super(LeadUpdateForm, self).save(commit=True)
         if commit:
-            up = None
-
-            if self.user.is_lvl3:
-                up = self.user.userprofile
-            elif self.user.is_lvl2:
-                up = self.user.manager.organisation
-            elif self.user.is_lvl1:
-                up = self.user.agent.organisation
 
             nonp = []
-            for field in CaseField.objects.filter(user=up):
+            for field in CaseField.objects.filter(user=self.instance.organisation):
                 field_name = field.name
                 nonp.append(field_name)
                 value = self.cleaned_data[field_name]

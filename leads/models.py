@@ -20,6 +20,13 @@ class UserProfile(models.Model):
         return self.user.username
 
 class Lead(models.Model):
+    STATUS_CHOICES  = [
+        ('进行中', '进行中'),
+        ('已完成', '已完成'),
+        ('待跟进', '待跟进'),
+        ('取消', '取消'),
+    ]
+
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
     email = models.EmailField()
@@ -29,7 +36,7 @@ class Lead(models.Model):
     organisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     quote = models.IntegerField(default=0)
     commission = models.IntegerField(default=0)
-    completed = models.BooleanField(default=False)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES , null=True, blank=True)
     description = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)
 
