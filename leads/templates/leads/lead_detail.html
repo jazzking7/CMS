@@ -3,15 +3,14 @@
 {% block content %}
 
 <section class="text-gray-700 body-font overflow-hidden">
-    <div class=" px-5 py-24 mx-auto">
-        <div class="lg:w-4/5 mx-auto flex flex-wrap">
-            <div class="w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
+    <div class=" px-5 py-5 mx-auto">
+        <div class="lg:w-4/5 mx-auto mb-4 flex flex-wrap">
+            <div class="w-full lg:pr-10 lg:py-6 mb-5 lg:mb-0">
                 <div class="w-full flex items-center justify-between space-x-6">
                     <div class="flex-1 truncate">
                         <div class="flex items-center space-x-3">
                             <h3 class="text-3xl text-gray-900 font-medium truncate">{{ lead.first_name }} {{ lead.last_name }}</h3>
                         </div>
-                        <p class="mt-1 text-xl text-gray-500 truncate">{{ lead.description }}</p>
                     </div>
                     {% if lead.profile_picture %}
                     <img class="w-10 h-10 bg-gray-300 rounded-full flex-shrink-0" src="{{ lead.profile_picture.url }}" alt="">
@@ -37,14 +36,15 @@
                     <span class="text-gray-500">Phone Number</span>
                     <span class="ml-auto text-gray-900">{{ lead.phone_number }}</span>
                 </div>
+                <p class="mt-1 text-lg text-gray-500 break-words">{{ lead.description }}</p>
             </div>
 
-        <a href="{% url 'leads:lead-followup-create' lead.pk %}" class="text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">添加跟进</a>
+            <a href="{% url 'leads:lead-followup-create' lead.pk %}" class="text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">添加跟进</a>
 
         </div>
 
         {% for followup in lead.followups.all %}
-            <div class="container mx-auto shadow px-4 sm:px-6">
+            <div class="lg:w-4/5 mx-auto shadow-md bg-gray-100 px-4 sm:px-6 mb-2">
                 <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4">
                     <dt class="text-sm font-medium text-gray-500">
                     备注 (<a href="{% url 'leads:lead-followup-update' followup.pk %}" class="text-blue-500 hover:text-blue-700">更改</a>)

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load tailwind_filters %}
+
+{% block content %}
+
+<div class="max-w-lg mx-auto">
+
+    <div class="py-5 border-b border-gray-200">
+        {% if parent_id %}
+            <a class="hover:text-blue-500" href="{% url 'folders:sub-folder' parent_id %}">返回</a>
+        {% else %}
+            <a class="hover:text-blue-500" href="{% url 'folders:root-folders' %}">返回</a>
+        {% endif %}
+    </div>
+
+    <h1 class="text-4xl text-gray-800 mb-4">创建新文件夹</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">创建</button>
+    </form>
+
+</div>
+{% endblock content %}

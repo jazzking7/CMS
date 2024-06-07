@@ -81,6 +81,7 @@ class CaseValue(models.Model):
             self.value_number = None
         super().save(*args, **kwargs)
 
+# TO BE UPDATED
 def handle_upload_follow_ups(instance, filename):
     directory = f"lead_followups/lead_{instance.lead.pk}/"
     full_directory = os.path.join(settings.MEDIA_ROOT, directory)
@@ -116,14 +117,59 @@ class Agent(models.Model):
     organisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.user.email
+        return f"{self.user.first_name} {self.user.last_name}"
 
 class Manager(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='manager', limit_choices_to={'is_lvl2': True})
     organisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.user.email
+        return f"{self.user.first_name} {self.user.last_name}"
+    
+class Folder(models.Model):
+    
+    name = models.CharField(max_length=255)
+    organisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, related_name='subfolders', null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+    
+def handle_upload_custom_files(instance, filename):
+    directory = ""
+    if instance.folder:
+        directory = f"documents/{instance.organisation}/folder_{instance.folder.pk}/"
+    else:
+        directory = f"documents/{instance.organisation}/folder_root/"
+
+    full_directory = os.path.join(settings.MEDIA_ROOT, directory)
+
+    if not os.path.exists(full_directory):
+        os.makedirs(full_directory)
+
+    name, ext = os.path.splitext(filename)
+    
+    target_file = os.path.join(full_directory, filename)
+    
+    if os.path.exists(target_file):
+        count = 1
+        while os.path.exists(target_file):
+            modified_filename = f"{name}_{count}{ext}"
+            target_file = os.path.join(full_directory, modified_filename)
+            count += 1
+    result = os.path.join(directory, os.path.basename(target_file))
+    return result
+    
+class FolderContent(models.Model):
+    title = models.CharField(max_length=255, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    folder = models.ForeignKey(Folder, on_delete=models.CASCADE, related_name='contents', blank=True, null=True)
+    organisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    file = models.FileField(upload_to=handle_upload_custom_files, blank=True, null=True)
+    url = models.URLField(blank=True, null=True)
+
+    def __str__(self):
+        return self.title
 
 # def post_user_created_signal(sender, instance, created, **kwargs):
 #     if created:

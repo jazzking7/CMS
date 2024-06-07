@@ -59,6 +59,7 @@ INSTALLED_APPS = [
 
     'leads',
     'agents',
+    'folders'
 ]
 
 MIDDLEWARE = [
@@ -206,56 +207,56 @@ if not DEBUG:
 
     ALLOWED_HOSTS = ["*"]
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
-        },
-    },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-        'file_debug': {
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'debug.log'),
-            'formatter': 'verbose',
-            'level': 'DEBUG',
-        },
-        'file_error': {
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'error.log'),
-            'formatter': 'verbose',
-            'level': 'ERROR',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console', 'file_debug', 'file_error'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'django.request': {
-            'handlers': ['console', 'file_error'],
-            'level': 'ERROR',
-            'propagate': False,
-        },
-        'myapp': {  # Replace 'myapp' with your application's name
-            'handlers': ['console', 'file_debug', 'file_error'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-    },
-    'root': {
-        'handlers': ['console', 'file_debug', 'file_error'],
-        'level': 'DEBUG',
-    },
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'verbose': {
+#             'format': '{levelname} {asctime} {module} {message}',
+#             'style': '{',
+#         },
+#         'simple': {
+#             'format': '{levelname} {message}',
+#             'style': '{',
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'simple',
+#         },
+#         'file_debug': {
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join(BASE_DIR, 'debug.log'),
+#             'formatter': 'verbose',
+#             'level': 'DEBUG',
+#         },
+#         'file_error': {
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join(BASE_DIR, 'error.log'),
+#             'formatter': 'verbose',
+#             'level': 'ERROR',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console', 'file_debug', 'file_error'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#         'django.request': {
+#             'handlers': ['console', 'file_error'],
+#             'level': 'ERROR',
+#             'propagate': False,
+#         },
+#         'myapp': {  # Replace 'myapp' with your application's name
+#             'handlers': ['console', 'file_debug', 'file_error'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#     },
+#     'root': {
+#         'handlers': ['console', 'file_debug', 'file_error'],
+#         'level': 'DEBUG',
+#     },
+# }

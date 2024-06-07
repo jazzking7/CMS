@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load tailwind_filters %}
+
+{% block content %}
+<div class="max-w-lg mx-auto">
+    <div class="py-5 border-b border-gray-200">
+        {% if parent_id %}
+            <a class="hover:text-blue-500" href="{% url 'folders:sub-folder' parent_id %}">返回</a>
+        {% else %}
+            <a class="hover:text-blue-500" href="{% url 'folders:root-folders' %}">返回</a>
+        {% endif %}
+    </div>
+    <h2 class="text-3xl text-gray-800">确定要删除该文件?</h2>
+    <form method="post" class="mt-5">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="w-full text-white bg-blue-500 hover:bg-red-600 px-3 py-2 rounded-md">删除</button>
+    </form>
+    <div class="py-5 mt-5">
+        {% if parent_id %}
+            <a class="hover:text-green-500" href="{% url 'folders:sub-folder' parent_id %}">取消</a>
+        {% else %}
+            <a class="hover:text-green-500" href="{% url 'folders:root-folders' %}">取消</a>
+        {% endif %}    
+    </div>
+</div>
+{% endblock content %}

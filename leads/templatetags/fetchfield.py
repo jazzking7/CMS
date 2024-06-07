@@ -9,6 +9,11 @@ def get_field_value(instance, field_name):
     value = getattr(instance, field_name, None)
     
     if value is not None:
+        if field_name == "commission":
+            value = str(value) + "%"
+        if field_name == "description":
+            if len(value) > 20:
+                value = value[:20]+"..."
         return value
     
     # If the attribute is not found, try to get it from CaseValue

@@ -73,6 +73,9 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
                 lead_fields.remove('followups')
             if "id" in lead_fields:
                 lead_fields.remove('id')
+            if "organisation" in lead_fields:
+                lead_fields.remove('organisation')
+
             case_fields = CaseField.objects.filter(user=lead.organisation)
             case_field_names = [field.name for field in case_fields]
 
@@ -287,7 +290,6 @@ class FollowUpDeleteView(LoginRequiredMixin, generic.DeleteView):
     #         os.remove(file_path)
         
     #     return response
-
 
 class CaseFieldListView(SupervisorAndLoginRequiredMixin, generic.ListView):
     template_name = "leads/casefield_list.html"

@@ -1,7 +1,9 @@
 from django.contrib import admin
 
 from .models import (User, Lead, Agent, UserProfile, FollowUp,
-                      CaseField, CaseValue, Manager)
+                      CaseField, CaseValue, Manager,
+                      Folder, FolderContent
+                      )
 
 
 
@@ -25,3 +27,5 @@ admin.site.register(FollowUp)
 admin.site.register(CaseField)
 admin.site.register(CaseValue)
 admin.site.register(Manager)
+admin.site.register(Folder)
+admin.site.register(FolderContent)
