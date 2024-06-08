@@ -166,7 +166,7 @@ class FolderContent(models.Model):
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE, related_name='contents', blank=True, null=True)
     organisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     file = models.FileField(upload_to=handle_upload_custom_files, blank=True, null=True)
-    url = models.URLField(blank=True, null=True)
+    # url = models.URLField(blank=True, null=True)
 
     def __str__(self):
         return self.title
