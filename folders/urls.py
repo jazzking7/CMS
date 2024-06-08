@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import (RootFolderView, FolderCreateView, SubFolderView, FolderDeleteView,
-                    FolderUpdateView,
-                    FolderContentCreateView, FolderContentDeleteView, FolderContentUpdateView)
+# from .views import (RootFolderView, FolderCreateView, SubFolderView, FolderDeleteView,
+#                     FolderUpdateView,
+#                     FolderContentCreateView, FolderContentDeleteView, FolderContentUpdateView)
 
 app_name = 'folders'
 
