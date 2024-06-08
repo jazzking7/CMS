@@ -158,9 +158,10 @@ def handle_upload_custom_files(instance, filename):
             target_file = os.path.join(full_directory, modified_filename)
             count += 1
     result = os.path.join(directory, os.path.basename(target_file))
+    print(result)
     return result
     
-class FolderContent(models.Model):
+class FolderDocument(models.Model):
     title = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE, related_name='contents', blank=True, null=True)

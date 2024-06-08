@@ -2,8 +2,12 @@ import random
 from django.core.mail import send_mail
 from django.views import generic
 from django.shortcuts import reverse, get_object_or_404
-from leads.models import Agent, Manager, User, UserProfile, Folder, FolderContent
-from .forms import FolderCreateForm, FolderContentCreateForm, FolderContentUpdateForm
+from leads.models import (Agent, Manager, User, UserProfile, Folder, 
+                          FolderDocument
+                          )
+from .forms import (FolderCreateForm, 
+                    FolderContentCreateForm, FolderContentUpdateForm
+                    )
 from django.contrib.auth.mixins import LoginRequiredMixin
 from agents.mixins import (SupervisorAndLoginRequiredMixin, SuperAdminAndLoginRequiredMixin, NoLvl1AndLoginRequiredMixin)
 
@@ -22,25 +26,25 @@ class RootFolderView(LoginRequiredMixin, generic.ListView):
         curr_contents = []
 
         if user.is_lvl4:
-            curr_contents = FolderContent.objects.filter(folder__isnull=True)
+            curr_contents = FolderDocument.objects.filter(folder__isnull=True)
         
         elif user.is_lvl3:
             # Level 3: all folders created by them and folders created by lvl2 under their management
-            curr_contents = FolderContent.objects.filter(
+            curr_contents = FolderDocument.objects.filter(
                 organisation=user.userprofile,
                 folder__isnull=True
             )
         
         elif user.is_lvl2:
             # Level 2: all folders created by them and folders created by lvl3 who supervise them
-            curr_contents = FolderContent.objects.filter(
+            curr_contents = FolderDocument.objects.filter(
                 organisation=user.manager.organisation,
                 folder__isnull=True,
             ) 
         
         elif user.is_lvl1:
             # Level 1: all folders created by lvl3 supervisors and lvl2 supervisors
-            curr_contents = FolderContent.objects.filter(
+            curr_contents = FolderDocument.objects.filter(
                 organisation=user.agent.organisation,
                 folder__isnull=True,
             )
@@ -89,7 +93,7 @@ class SubFolderView(LoginRequiredMixin, generic.ListView):
         context['curr_folder'] = current_folder
     
         context['curr_folders'] = self.get_queryset()
-        context['curr_contents'] = FolderContent.objects.filter(folder=current_folder)
+        context['curr_contents'] = FolderDocument.objects.filter(folder=current_folder)
 
         return context
 
@@ -164,6 +168,7 @@ class FolderUpdateView(NoLvl1AndLoginRequiredMixin, generic.UpdateView):
 
 class FolderContentCreateView(NoLvl1AndLoginRequiredMixin, generic.CreateView):
     template_name = "folders/folder_content_create.html"
+    model = FolderDocument
     form_class = FolderContentCreateForm
 
     def get_context_data(self, **kwargs):
@@ -177,13 +182,12 @@ class FolderContentCreateView(NoLvl1AndLoginRequiredMixin, generic.CreateView):
             parent_folder = get_object_or_404(Folder, pk=parent_folder_id)
             form.instance.folder = parent_folder
         else:
-            form.instance.parent = None
+            form.instance.folder = None
         user = self.request.user
         if user.is_lvl2:
             form.instance.organisation = self.request.user.manager.organisation
         else:
-            form.instance.organisation = self.request.user.userprofile            
-        form.instance.organisation = self.request.user.userprofile
+            form.instance.organisation = self.request.user.userprofile  
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -194,7 +198,7 @@ class FolderContentCreateView(NoLvl1AndLoginRequiredMixin, generic.CreateView):
             return reverse("folders:root-folders")
 
 class FolderContentDeleteView(NoLvl1AndLoginRequiredMixin, generic.DeleteView):
-    model = FolderContent
+    model = FolderDocument
     template_name = "folders/folder_content_delete.html"
 
     def get_context_data(self, **kwargs):
@@ -210,7 +214,7 @@ class FolderContentDeleteView(NoLvl1AndLoginRequiredMixin, generic.DeleteView):
             return reverse("folders:root-folders")
 
 class FolderContentUpdateView(NoLvl1AndLoginRequiredMixin, generic.UpdateView):
-    model = FolderContent
+    model = FolderDocument
     form_class = FolderContentUpdateForm
     template_name = "folders/folder_content_update.html"
 

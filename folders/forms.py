@@ -1,7 +1,9 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from leads.models import UserProfile, Folder, FolderContent
+from leads.models import (UserProfile, Folder, 
+                          FolderDocument
+                          )
 
 
 User = get_user_model()
@@ -16,7 +18,7 @@ class FolderCreateForm(forms.ModelForm):
 
 class FolderContentCreateForm(forms.ModelForm):
     class Meta:
-        model = FolderContent
+        model = FolderDocument
         fields = (
             'title',
             'description',
@@ -26,7 +28,7 @@ class FolderContentCreateForm(forms.ModelForm):
 
 class FolderContentUpdateForm(forms.ModelForm):
     class Meta:
-        model = FolderContent
+        model = FolderDocument
         fields = (
             'title',
             'description',
