@@ -126,14 +126,14 @@ class Manager(models.Model):
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
     
-# class Folder(models.Model):
+class Folder(models.Model):
     
-#     name = models.CharField(max_length=255)
-#     organisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-#     parent = models.ForeignKey('self', on_delete=models.CASCADE, related_name='subfolders', null=True, blank=True)
+    name = models.CharField(max_length=255)
+    organisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, related_name='subfolders', null=True, blank=True)
 
-#     def __str__(self):
-#         return self.name
+    def __str__(self):
+        return self.name
     
 def handle_upload_custom_files(instance, filename):
     directory = ""
@@ -160,20 +160,13 @@ def handle_upload_custom_files(instance, filename):
     result = os.path.join(directory, os.path.basename(target_file))
     return result
     
-# class FolderContent(models.Model):
-#     title = models.CharField(max_length=255, blank=True, null=True)
-#     description = models.TextField(blank=True, null=True)
-#     folder = models.ForeignKey(Folder, on_delete=models.CASCADE, related_name='contents', blank=True, null=True)
-#     organisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-#     file = models.FileField(upload_to=handle_upload_custom_files, blank=True, null=True)
-#     url = models.URLField(blank=True, null=True)
+class FolderContent(models.Model):
+    title = models.CharField(max_length=255, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    folder = models.ForeignKey(Folder, on_delete=models.CASCADE, related_name='contents', blank=True, null=True)
+    organisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    file = models.FileField(upload_to=handle_upload_custom_files, blank=True, null=True)
+    url = models.URLField(blank=True, null=True)
 
-#     def __str__(self):
-#         return self.title
-
-# def post_user_created_signal(sender, instance, created, **kwargs):
-#     if created:
-#         UserProfile.objects.create(user=instance)
-
-
-# post_save.connect(post_user_created_signal, sender=User)
+    def __str__(self):
+        return self.title if self.title else "NoName"
