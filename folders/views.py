@@ -188,6 +188,21 @@ class FolderContentCreateView(NoLvl1AndLoginRequiredMixin, generic.CreateView):
             form.instance.organisation = self.request.user.manager.organisation
         else:
             form.instance.organisation = self.request.user.userprofile  
+
+        files = self.request.FILES.getlist('file')
+
+        if files:
+            for file in files:
+                folder_document = FolderDocument(
+                    title=form.cleaned_data['title'],
+                    description=form.cleaned_data['description'],
+                    folder=form.instance.folder,
+                    organisation=form.instance.organisation,
+                    file=file,
+                    url=form.cleaned_data['url']
+                )
+                folder_document.save()
+        form.save(files=files, suppressed=False)
         return super().form_valid(form)
 
     def get_success_url(self):

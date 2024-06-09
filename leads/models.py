@@ -158,7 +158,6 @@ def handle_upload_custom_files(instance, filename):
             target_file = os.path.join(full_directory, modified_filename)
             count += 1
     result = os.path.join(directory, os.path.basename(target_file))
-    print(result)
     return result
     
 class FolderDocument(models.Model):
