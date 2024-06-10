@@ -49,7 +49,7 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
                 organisation=user.manager.organisation, 
                 #agent__isnull=False
             )
-            queryset = queryset.filter(manager__user=user)
+            # queryset = queryset.filter(manager__user=user)
         elif user.is_lvl1:
             queryset = Lead.objects.filter(
                 organisation=user.agent.organisation, 
