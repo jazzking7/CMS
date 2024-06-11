@@ -120,7 +120,6 @@ class LeadDetailView(LoginRequiredMixin, generic.DetailView):
                 organisation=user.manager.organisation, 
                 #agent__isnull=False
             )
-            queryset = queryset.filter(manager__user=user)
         elif user.is_lvl1:
             queryset = Lead.objects.filter(
                 organisation=user.agent.organisation, 
@@ -247,7 +246,6 @@ class FollowUpUpdateView(LoginRequiredMixin, generic.UpdateView):
             queryset = FollowUp.objects.filter(lead__organisation=user.userprofile)
         elif user.is_lvl2:
             queryset = FollowUp.objects.filter(lead__organisation=user.manager.organisation)
-            queryset = queryset.filter(lead__manager__user=user)
         elif user.is_lvl1:
             queryset = FollowUp.objects.filter(lead__organisation=user.agent.organisation)
             queryset = queryset.filter(lead__agent__user=user)
@@ -272,7 +270,6 @@ class FollowUpDeleteView(LoginRequiredMixin, generic.DeleteView):
             queryset = FollowUp.objects.filter(lead__organisation=user.userprofile)
         elif user.is_lvl2:
             queryset = FollowUp.objects.filter(lead__organisation=user.manager.organisation)
-            queryset = queryset.filter(lead__manager__user=user)
         elif user.is_lvl1:
             queryset = FollowUp.objects.filter(lead__organisation=user.agent.organisation)
             queryset = queryset.filter(lead__agent__user=user)
