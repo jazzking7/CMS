@@ -8,15 +8,23 @@ from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic, View
 from agents.mixins import OrganisorAndLoginRequiredMixin, AgentAndLoginRequiredMixin,SupervisorAndLoginRequiredMixin, NotSuperuserAndLoginRequiredMixin
-from .models import Lead, FollowUp, CaseField, CaseValue, Agent
+from .models import Lead, FollowUp, CaseField, CaseValue, UserRelation, User
 from .forms import (
     LeadModelForm, 
-    AssignAgentForm, 
     FollowUpModelForm,
     LeadUpdateForm,
     FollowUpUpdateModelForm
 )
+from django.db.models import Q
 
+# Used by major update
+from django.core.exceptions import ObjectDoesNotExist
+
+def get_or_none(model, **kwargs):
+    try:
+        return model.objects.get(**kwargs)
+    except ObjectDoesNotExist:
+        return None
 
 import logging
 logger = logging.getLogger(__name__)
@@ -45,17 +53,28 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
                 #agent__isnull=False
             )
         elif user.is_lvl2:
-            queryset = Lead.objects.filter(
-                organisation=user.manager.organisation, 
-                #agent__isnull=False
-            )
+            
+            sr = get_or_none(UserRelation, user=user)
+            if sr:
+                up = sr.supervisor.userprofile
+                queryset = Lead.objects.filter(
+                    organisation=up, 
+                    #agent__isnull=False
+                )
+            else:
+                queryset = Lead.objects.none()
             # queryset = queryset.filter(manager__user=user)
         elif user.is_lvl1:
-            queryset = Lead.objects.filter(
-                organisation=user.agent.organisation, 
-                #agent__isnull=False
-            )
-            queryset = queryset.filter(agent__user=user)
+            sr = get_or_none(UserRelation, user=user)
+            if sr:
+                up = sr.supervisor.userprofile
+                queryset = Lead.objects.filter(
+                    organisation=up, 
+                    #agent__isnull=False
+                )
+                queryset = queryset.filter(agent=user)
+            else:
+                queryset = Lead.objects.none()
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -116,16 +135,20 @@ class LeadDetailView(LoginRequiredMixin, generic.DetailView):
                 #agent__isnull=False
             )
         elif user.is_lvl2:
+            sr = UserRelation.objects.get(user=user)
+            up = sr.supervisor.userprofile
             queryset = Lead.objects.filter(
-                organisation=user.manager.organisation, 
+                organisation=up, 
                 #agent__isnull=False
             )
         elif user.is_lvl1:
+            sr = UserRelation.objects.get(user=user)
+            up = sr.supervisor.userprofile
             queryset = Lead.objects.filter(
-                organisation=user.agent.organisation, 
+                organisation=up, 
                 #agent__isnull=False
             )
-            queryset = queryset.filter(agent__user=user)
+            queryset = queryset.filter(agent=user)
         return queryset
 
 class LeadCreateView(NotSuperuserAndLoginRequiredMixin, generic.CreateView):
@@ -147,11 +170,13 @@ class LeadCreateView(NotSuperuserAndLoginRequiredMixin, generic.CreateView):
         if user.is_lvl3:
             up = user.userprofile
         elif user.is_lvl2:
-            up = user.manager.organisation
-            lead.manager = user.manager
+            sr = UserRelation.objects.get(user=user)
+            up = sr.supervisor.userprofile
+            lead.manager = user
         elif user.is_lvl1:
-            up = self.user.agent.organisation
-            lead.agent = user.agent
+            sr = UserRelation.objects.get(user=user)
+            up = sr.supervisor.userprofile
+            lead.agent = user
         lead.organisation = up
         lead.save()
         # send_mail(
@@ -179,9 +204,11 @@ class LeadUpdateView(LoginRequiredMixin, generic.UpdateView):
         if user.is_lvl3:
             up = user.userprofile
         elif user.is_lvl2:
-            up = user.manager.organisation
+            sr = UserRelation.objects.get(user=user)
+            up = sr.supervisor.userprofile
         elif user.is_lvl1:
-            up = user.agent.organisation
+            sr = UserRelation.objects.get(user=user)
+            up = sr.supervisor.userprofile
 
         if user.is_lvl3 or user.is_lvl2 or user.is_lvl1:
             return Lead.objects.filter(organisation=up)
@@ -206,7 +233,8 @@ class LeadDeleteView(OrganisorAndLoginRequiredMixin, generic.DeleteView):
         user = self.request.user
         up = None
         if user.is_lvl2:
-            up = user.manager.organisation
+            sr = UserRelation.objects.get(user=user)
+            up = sr.supervisor.userprofile
 
         # initial queryset of leads for the entire organisation
         return Lead.objects.filter(organisation=up)
@@ -245,10 +273,13 @@ class FollowUpUpdateView(LoginRequiredMixin, generic.UpdateView):
         elif user.is_lvl3:
             queryset = FollowUp.objects.filter(lead__organisation=user.userprofile)
         elif user.is_lvl2:
-            queryset = FollowUp.objects.filter(lead__organisation=user.manager.organisation)
+            sr = UserRelation.objects.get(user=user)
+            up = sr.supervisor.userprofile
+            queryset = FollowUp.objects.filter(lead__organisation=up)
         elif user.is_lvl1:
-            queryset = FollowUp.objects.filter(lead__organisation=user.agent.organisation)
-            queryset = queryset.filter(lead__agent__user=user)
+            sr = UserRelation.objects.get(user=user)
+            up = sr.supervisor.userprofile
+            queryset = FollowUp.objects.filter(lead__organisation=up)
         return queryset
 
     def get_success_url(self):
@@ -269,10 +300,13 @@ class FollowUpDeleteView(LoginRequiredMixin, generic.DeleteView):
         elif user.is_lvl3:
             queryset = FollowUp.objects.filter(lead__organisation=user.userprofile)
         elif user.is_lvl2:
-            queryset = FollowUp.objects.filter(lead__organisation=user.manager.organisation)
+            sr = UserRelation.objects.get(user=user)
+            up = sr.supervisor.userprofile
+            queryset = FollowUp.objects.filter(lead__organisation=up)
         elif user.is_lvl1:
-            queryset = FollowUp.objects.filter(lead__organisation=user.agent.organisation)
-            queryset = queryset.filter(lead__agent__user=user)
+            sr = UserRelation.objects.get(user=user)
+            up = sr.supervisor.userprofile
+            queryset = FollowUp.objects.filter(lead__organisation=up)
         return queryset
     
     # def form_valid(self, form):
@@ -328,9 +362,13 @@ class PerformanceListView(LoginRequiredMixin, generic.ListView):
         elif user.is_lvl3:
             queryset = Lead.objects.filter(organisation=user.userprofile)
         elif user.is_lvl2:
-            queryset = Lead.objects.filter(organisation=user.manager.organisation)
+            sr = UserRelation.objects.get(user=user)
+            up = sr.supervisor.userprofile
+            queryset = Lead.objects.filter(organisation=up)
         elif user.is_lvl1:
-            queryset = Lead.objects.filter(organisation=user.agent.organisation)
+            sr = UserRelation.objects.get(user=user)
+            up = sr.supervisor.userprofile
+            queryset = Lead.objects.filter(organisation=up)
         return queryset
     
     def get_context_data(self, **kwargs):
@@ -340,18 +378,22 @@ class PerformanceListView(LoginRequiredMixin, generic.ListView):
 
         all_agents = []
         if user.is_lvl4:
-            all_agents = Agent.objects.all()
+            all_agents = User.objects.filter(is_lvl1=True)
         elif user.is_lvl3:
-            all_agents = Agent.objects.filter(organisation=user.userprofile)
+            all_agents = User.objects.filter(
+                Q(is_lvl1=True) & Q(user_name__supervisor=user)
+            )
         elif user.is_lvl2:
-            all_agents = Agent.objects.filter(organisation=user.manager.organisation)
+            sr = UserRelation.objects.filter(user=user).first()
+            all_agents = User.objects.filter(Q(is_lvl1=True) & Q(user_name__supervisor=sr.supervisor))
         elif user.is_lvl1:
-            all_agents = Agent.objects.filter(organisation=user.agent.organisation)
+            sr = UserRelation.objects.filter(user=user).first()
+            all_agents = User.objects.filter(Q(is_lvl1=True) & Q(user_name__supervisor=sr.supervisor)) 
 
         agent_data = {}
         for agent in all_agents:
             agent_data[agent] = {
-                'username': agent.user.username,
+                'username': agent.username,
                 'num_leads': 0,
                 'total_commission': 0,
                 'num_completed_leads': 0,
@@ -397,23 +439,3 @@ class LeadJsonView(generic.View):
             "qs": qs,
         })
     
-class AssignAgentView(OrganisorAndLoginRequiredMixin, generic.FormView):
-    template_name = "leads/assign_agent.html"
-    form_class = AssignAgentForm
-
-    def get_form_kwargs(self, **kwargs):
-        kwargs = super(AssignAgentView, self).get_form_kwargs(**kwargs)
-        kwargs.update({
-            "request": self.request
-        })
-        return kwargs
-        
-    def get_success_url(self):
-        return reverse("leads:lead-list")
-
-    def form_valid(self, form):
-        agent = form.cleaned_data["agent"]
-        lead = Lead.objects.get(id=self.kwargs["pk"])
-        lead.agent = agent
-        lead.save()
-        return super(AssignAgentView, self).form_valid(form)

@@ -12,12 +12,22 @@ class User(AbstractUser):
     is_lvl2 = models.BooleanField(default=False)
     is_lvl1 = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.first_name + ' ' + self.last_name
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name="userprofile", on_delete=models.CASCADE)
 
     def __str__(self):
         return self.user.username
+
+class UserRelation(models.Model):
+    user = models.ForeignKey(User, related_name='user_name', on_delete=models.CASCADE)
+    supervisor = models.ForeignKey(User, related_name='supervisor', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.user.username} supervised by {self.supervisor.username}'
 
 class Lead(models.Model):
     STATUS_CHOICES  = [
@@ -32,8 +42,8 @@ class Lead(models.Model):
     last_name = models.CharField(max_length=20)
     email = models.EmailField()
     phone_number = models.CharField(max_length=20)
-    agent = models.ForeignKey("Agent", null=True, blank=True, on_delete=models.SET_NULL)
-    manager = models.ForeignKey("Manager", null=True, blank=True, on_delete=models.SET_NULL)
+    agent = models.ForeignKey(User, null=True, blank=True, related_name='agent_leads' ,on_delete=models.SET_NULL, default=None)
+    manager = models.ForeignKey(User, null=True, blank=True, related_name='manager_leads', on_delete=models.SET_NULL, default=None)
     organisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     quote = models.IntegerField(default=0)
     commission = models.IntegerField(default=0)
@@ -111,21 +121,6 @@ class FollowUp(models.Model):
 
     def __str__(self):
         return f"{self.lead.first_name} {self.lead.last_name}"
-
-
-class Agent(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='agent', limit_choices_to={'is_lvl1': True})
-    organisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.user.first_name} {self.user.last_name}"
-
-class Manager(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='manager', limit_choices_to={'is_lvl2': True})
-    organisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.user.first_name} {self.user.last_name}"
     
 class Folder(models.Model):
     

@@ -51,7 +51,7 @@
                                 {% for field in lead_fields %}
                                 <td class="px-2 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {% if forloop.first %}
-                                    <a href="{% url 'leads:lead-detail' lead.pk %}" class="text-indigo-200 hover:text-indigo-900">
+                                    <a href="{% url 'leads:lead-detail' lead.pk %}" class="text-indigo-400 hover:text-indigo-900">
                                         {{ lead|get_field_value:field }}
                                     </a>
                                     {% else %}

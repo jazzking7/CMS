@@ -2,8 +2,8 @@ import random
 from django.core.mail import send_mail
 from django.views import generic
 from django.shortcuts import reverse, get_object_or_404
-from leads.models import (Agent, Manager, User, UserProfile, Folder, 
-                          FolderDocument
+from leads.models import (User, UserProfile, Folder, 
+                          FolderDocument, UserRelation
                           )
 from .forms import (FolderCreateForm, 
                     FolderContentCreateForm, FolderContentUpdateForm
@@ -36,16 +36,21 @@ class RootFolderView(LoginRequiredMixin, generic.ListView):
             )
         
         elif user.is_lvl2:
+
+            user_relation = get_object_or_404(UserRelation, user=user)
+            supervisor_userprofile = user_relation.supervisor.userprofile
             # Level 2: all folders created by them and folders created by lvl3 who supervise them
             curr_contents = FolderDocument.objects.filter(
-                organisation=user.manager.organisation,
+                organisation=supervisor_userprofile,
                 folder__isnull=True,
             ) 
         
         elif user.is_lvl1:
+            user_relation = get_object_or_404(UserRelation, user=user)
+            supervisor_userprofile = user_relation.supervisor.userprofile
             # Level 1: all folders created by lvl3 supervisors and lvl2 supervisors
             curr_contents = FolderDocument.objects.filter(
-                organisation=user.agent.organisation,
+                organisation=supervisor_userprofile,
                 folder__isnull=True,
             )
     
@@ -62,6 +67,7 @@ class RootFolderView(LoginRequiredMixin, generic.ListView):
             queryset = Folder.objects.filter(parent__isnull=True)
         
         elif user.is_lvl3:
+            
             # Level 3: all folders created by them and folders created by lvl2 under their management
             queryset = Folder.objects.filter(
                 organisation=user.userprofile,
@@ -69,16 +75,20 @@ class RootFolderView(LoginRequiredMixin, generic.ListView):
             )
         
         elif user.is_lvl2:
+            user_relation = get_object_or_404(UserRelation, user=user)
+            supervisor_userprofile = user_relation.supervisor.userprofile
             # Level 2: all folders created by them and folders created by lvl3 who supervise them
             queryset = Folder.objects.filter(
-                organisation=user.manager.organisation,
+                organisation=supervisor_userprofile,
                 parent__isnull=True,
             ) 
         
         elif user.is_lvl1:
+            user_relation = get_object_or_404(UserRelation, user=user)
+            supervisor_userprofile = user_relation.supervisor.userprofile
             # Level 1: all folders created by lvl3 supervisors and lvl2 supervisors
             queryset = Folder.objects.filter(
-                organisation=user.agent.organisation,
+                organisation=supervisor_userprofile,
                 parent__isnull=True,
             )
         return queryset
@@ -123,7 +133,9 @@ class FolderCreateView(NoLvl1AndLoginRequiredMixin, generic.CreateView):
             form.instance.parent = None
         user = self.request.user
         if user.is_lvl2:
-            form.instance.organisation = self.request.user.manager.organisation
+            user_relation = get_object_or_404(UserRelation, user=user)
+            supervisor_userprofile = user_relation.supervisor.userprofile
+            form.instance.organisation = supervisor_userprofile
         else:
             form.instance.organisation = self.request.user.userprofile
         return super().form_valid(form)
@@ -185,7 +197,9 @@ class FolderContentCreateView(NoLvl1AndLoginRequiredMixin, generic.CreateView):
             form.instance.folder = None
         user = self.request.user
         if user.is_lvl2:
-            form.instance.organisation = self.request.user.manager.organisation
+            user_relation = get_object_or_404(UserRelation, user=user)
+            supervisor_userprofile = user_relation.supervisor.userprofile
+            form.instance.organisation = supervisor_userprofile
         else:
             form.instance.organisation = self.request.user.userprofile  
 

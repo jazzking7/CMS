@@ -1,9 +1,10 @@
 from django import forms
 from django.conf import settings
+from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, UsernameField
-from .models import Lead, Agent, FollowUp, CaseField, CaseValue, Manager, handle_upload_follow_ups
+from .models import Lead, FollowUp, CaseField, CaseValue, handle_upload_follow_ups, UserRelation, User
 import os
 
 User = get_user_model()
@@ -30,9 +31,11 @@ class LeadModelForm(forms.ModelForm):
         if self.user.is_lvl3:
             up = self.user.userprofile
         elif self.user.is_lvl2:
-            up = self.user.manager.organisation
+            sr = UserRelation.objects.get(user=self.user)
+            up = sr.supervisor.userprofile
         elif self.user.is_lvl1:
-            up = self.user.agent.organisation
+            sr = UserRelation.objects.get(user=self.user)
+            up = sr.supervisor.userprofile
 
         additional_fields = CaseField.objects.filter(user=up)
         for field in additional_fields:
@@ -61,9 +64,12 @@ class LeadModelForm(forms.ModelForm):
             if self.user.is_lvl3:
                 up = self.user.userprofile
             elif self.user.is_lvl2:
-                up = self.user.manager.organisation
+                sr = UserRelation.objects.get(user=self.user)
+                up = sr.supervisor.userprofile
             elif self.user.is_lvl1:
-                up = self.user.agent.organisation
+                sr = UserRelation.objects.get(user=self.user)
+                up = sr.supervisor.userprofile
+
 
             for field in CaseField.objects.filter(user=up):
                 field_name = field.name
@@ -94,15 +100,15 @@ class LeadUpdateForm(forms.ModelForm):
         self.user = kwargs.pop('user')
         self.instance = kwargs.get('instance', None)
         instance = kwargs.get('instance')
-        org = instance.organisation
+        org = instance.organisation if instance else None
         super(LeadUpdateForm, self).__init__(*args, **kwargs)
 
         CHOICES = [
-        ('进行中', '进行中'),
-        ('已完成', '已完成'),
-        ('待跟进', '待跟进'),
-        ('待递交', '待递交'),
-        ('取消', '取消'),
+            ('进行中', '进行中'),
+            ('已完成', '已完成'),
+            ('待跟进', '待跟进'),
+            ('待递交', '待递交'),
+            ('取消', '取消'),
         ]
         
         if self.user.is_lvl3 or self.user.is_lvl4:
@@ -111,8 +117,13 @@ class LeadUpdateForm(forms.ModelForm):
             self.fields['quote'] = forms.IntegerField(label='Quote', required=True, initial=instance.quote if instance else None)
             self.fields['commission'] = forms.IntegerField(label='Commission', required=True, initial=instance.commission if instance else None)
 
-            self.fields['agent'] = forms.ModelChoiceField(queryset=Agent.objects.filter(organisation=org), initial=instance.agent, required=False)
-            self.fields['manager'] = forms.ModelChoiceField(queryset=Manager.objects.filter(organisation=org), initial=instance.manager, required=False)
+            user_set = User.objects.filter(
+                Q(is_lvl3=True, userprofile=org) |
+                Q(Q(is_lvl1=True) | Q(is_lvl2=True), user_name__supervisor__userprofile=org)
+            )
+
+            self.fields['agent'] = forms.ModelChoiceField(queryset=user_set, initial=instance.agent, required=False)
+            self.fields['manager'] = forms.ModelChoiceField(queryset=user_set, initial=instance.manager, required=False)
    
         self.fields['status'] = forms.ChoiceField(
                 choices=Lead.STATUS_CHOICES,
@@ -183,13 +194,3 @@ class LeadForm(forms.Form):
     first_name = forms.CharField()
     last_name = forms.CharField()
     age = forms.IntegerField(min_value=0)
-
-
-class AssignAgentForm(forms.Form):
-    agent = forms.ModelChoiceField(queryset=Agent.objects.none())
-
-    def __init__(self, *args, **kwargs):
-        request = kwargs.pop("request")
-        agents = Agent.objects.filter(organisation=request.user.userprofile)
-        super(AssignAgentForm, self).__init__(*args, **kwargs)
-        self.fields["agent"].queryset = agents

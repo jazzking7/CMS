@@ -151,7 +151,7 @@ class UpdateUserForm(forms.ModelForm):
 
         if self.curr_lvl in ['lvl1', 'lvl2']:
             self.fields['organisor'] = forms.ModelChoiceField(
-                queryset=UserProfile.objects.filter(user__is_lvl3=True),
+                queryset=User.objects.filter(is_lvl3=True),
                 required=True,
                 label="Supervisor"
             )

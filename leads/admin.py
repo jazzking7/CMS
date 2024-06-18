@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from .models import (User, Lead, Agent, UserProfile, FollowUp,
-                      CaseField, CaseValue, Manager,
+from .models import (User, Lead, UserProfile, FollowUp,
+                      CaseField, CaseValue, UserRelation,
                       Folder, 
                       FolderDocument
                       )
@@ -23,10 +23,10 @@ class LeadAdmin(admin.ModelAdmin):
 admin.site.register(User)
 admin.site.register(UserProfile)
 admin.site.register(Lead, LeadAdmin)
-admin.site.register(Agent)
+
 admin.site.register(FollowUp)
 admin.site.register(CaseField)
 admin.site.register(CaseValue)
-admin.site.register(Manager)
+admin.site.register(UserRelation)
 admin.site.register(Folder)
 admin.site.register(FolderDocument)

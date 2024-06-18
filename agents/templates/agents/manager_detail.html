@@ -6,8 +6,8 @@
     <div class=" px-5 py-24 mx-auto">
       <div class="lg:w-4/5 mx-auto flex flex-wrap">
         <div class="w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
-            <h2 class="text-sm title-font text-gray-500 tracking-widest">MANAGER</h2>
-            <h1 class="text-gray-900 text-3xl title-font font-medium mb-4">{{ manager.user.username }}</h1>
+            <h2 class="text-sm title-font text-gray-500 tracking-widest">主管</h2>
+            <h1 class="text-gray-900 text-3xl title-font font-medium mb-4">{{ manager.username }}</h1>
             <div class="flex mb-4">
                 <a href="{% url 'agents:manager-detail' manager.pk %}" class="flex-grow text-indigo-500 border-b-2 border-indigo-500 py-2 text-lg px-1">
                     概述
@@ -18,15 +18,15 @@
             </div>
             <div class="flex border-t border-gray-300 py-2">
                 <span class="text-gray-500">Full Name</span>
-                <span class="ml-auto text-gray-900">{{ manager.user.first_name }} {{ manager.user.last_name }}</span>
+                <span class="ml-auto text-gray-900">{{ manager.first_name }} {{ manager.last_name }}</span>
             </div>
             <div class="flex border-t border-gray-300 py-2">
                 <span class="text-gray-500">Email</span>
-                <span class="ml-auto text-gray-900">{{ manager.user.email }}</span>
+                <span class="ml-auto text-gray-900">{{ manager.email }}</span>
             </div>
             <div class="flex border-t border-gray-300 py-2">
                 <span class="text-gray-500">Username</span>
-                <span class="ml-auto text-gray-900">{{ manager.user.username }}</span>
+                <span class="ml-auto text-gray-900">{{ manager.username }}</span>
             </div>
             <div class="flex border-t border-gray-300 py-2">
                 <span class="text-gray-500">User Permission Level</span>
