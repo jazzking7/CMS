@@ -406,7 +406,7 @@ class PerformanceListView(LoginRequiredMixin, generic.ListView):
             if lead.agent:
                 agent_info = agent_data[lead.agent]
                 agent_info['num_leads'] += 1
-                commission = int(lead.quote) * (int(lead.commission) / 100)
+                commission = int((lead.quote) * (int(lead.commission) / 100))
                 agent_info['total_commission'] += commission
                 if lead.status=='已完成':
                     agent_info['num_completed_leads'] += 1
@@ -422,7 +422,6 @@ class PerformanceListView(LoginRequiredMixin, generic.ListView):
             ]
             for agent_info in agent_data.values()
         ]
-
         context['performances'] = performances
         return context
     

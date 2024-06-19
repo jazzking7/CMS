@@ -4,11 +4,11 @@ var KTUsersPermissionsList = function () {
     return {
         init: function () {
             (e = document.querySelector("#kt_permissions_table")) && (
-                e.querySelectorAll("tbody tr").forEach((t => {
-                    const e = t.querySelectorAll("td"),
-                        n = moment(e[2].innerHTML, "DD MMM YYYY, LT").format();
-                    e[2].setAttribute("data-order", n)
-                })),
+                // e.querySelectorAll("tbody tr").forEach((t => {
+                //     const e = t.querySelectorAll("td"),
+                //         n = moment(e[2].innerHTML, "DD MMM YYYY, LT").format();
+                //     e[2].setAttribute("data-order", n)
+                // })),
                 t = $(e).DataTable({
                     info: !1,
                     order: [],
