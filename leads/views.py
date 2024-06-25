@@ -388,7 +388,7 @@ class PerformanceListView(LoginRequiredMixin, generic.ListView):
 
         all_agents = []
         if user.is_lvl4:
-            all_agents = User.objects.filter(is_lvl1=True)
+            all_agents = User.objects.all()
         elif user.is_lvl3:
             all_agents = User.objects.filter(
                 Q(is_lvl3=True, userprofile=up) |
