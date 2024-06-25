@@ -376,19 +376,34 @@ class PerformanceListView(LoginRequiredMixin, generic.ListView):
         leads = self.get_queryset()
         user = self.request.user
 
+        up = None
+        if user.is_lvl3:
+            up = user.userprofile
+        elif user.is_lvl2:
+            sr = UserRelation.objects.get(user=user)
+            up = sr.supervisor.userprofile
+        elif user.is_lvl1:
+            sr = UserRelation.objects.get(user=user)
+            up = sr.supervisor.userprofile
+
         all_agents = []
         if user.is_lvl4:
             all_agents = User.objects.filter(is_lvl1=True)
         elif user.is_lvl3:
             all_agents = User.objects.filter(
-                Q(is_lvl1=True) & Q(user_name__supervisor=user)
+                Q(is_lvl3=True, userprofile=up) |
+                Q(Q(is_lvl1=True) | Q(is_lvl2=True), user_name__supervisor__userprofile=up)
             )
         elif user.is_lvl2:
-            sr = UserRelation.objects.filter(user=user).first()
-            all_agents = User.objects.filter(Q(is_lvl1=True) & Q(user_name__supervisor=sr.supervisor))
+            all_agents = User.objects.filter(
+                Q(is_lvl3=True, userprofile=up) |
+                Q(Q(is_lvl1=True) | Q(is_lvl2=True), user_name__supervisor__userprofile=up)
+            )
         elif user.is_lvl1:
-            sr = UserRelation.objects.filter(user=user).first()
-            all_agents = User.objects.filter(Q(is_lvl1=True) & Q(user_name__supervisor=sr.supervisor)) 
+            all_agents = User.objects.filter(
+                Q(is_lvl3=True, userprofile=up) |
+                Q(Q(is_lvl1=True) | Q(is_lvl2=True), user_name__supervisor__userprofile=up)
+            )
 
         agent_data = {}
         for agent in all_agents:
