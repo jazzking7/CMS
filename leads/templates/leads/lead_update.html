@@ -4,7 +4,7 @@
 {% block content %}
 
 <section class="text-gray-700 body-font overflow-hidden">
-    <div class=" px-5 py-24 mx-auto">
+    <div class=" px-5 py-5 mx-auto">
       <div class="lg:w-4/5 mx-auto flex flex-wrap">
         <div class="w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
             <!-- <h2 class="text-sm title-font text-gray-500 tracking-widest">LEAD</h2> -->
@@ -22,9 +22,9 @@
                 {{ form|crispy }}
                 <button type="submit" class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">更改</button>
             </form>
-            {% if request.user.is_lvl2 %}
+            {% if request.user.is_lvl2 or request.user.is_lvl3 or request.user.is_lvl4 %}
             <div class="mt-5 py-5 border-t border-gray-200">
-                <a href="{% url 'leads:lead-delete' lead.pk %}" class="w-1/2 mt-3 text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">
+                <a href="{% url 'leads:lead-delete' lead.pk %}" class="w-1/2 mt-3 text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-red-600 rounded">
                     删除
                 </a>
             </div>

@@ -7,7 +7,7 @@ from django.http.response import JsonResponse
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic, View
-from agents.mixins import OrganisorAndLoginRequiredMixin, AgentAndLoginRequiredMixin,SupervisorAndLoginRequiredMixin, NotSuperuserAndLoginRequiredMixin
+from agents.mixins import SupervisorAndLoginRequiredMixin, NotSuperuserAndLoginRequiredMixin, NoLvl1AndLoginRequiredMixin
 from .models import Lead, FollowUp, CaseField, CaseValue, UserRelation, User
 from .forms import (
     LeadModelForm, 
@@ -223,7 +223,7 @@ class LeadUpdateView(LoginRequiredMixin, generic.UpdateView):
         messages.info(self.request, "You have successfully updated this lead")
         return super(LeadUpdateView, self).form_valid(form)
 
-class LeadDeleteView(OrganisorAndLoginRequiredMixin, generic.DeleteView):
+class LeadDeleteView(NoLvl1AndLoginRequiredMixin, generic.DeleteView):
     template_name = "leads/lead_delete.html"
 
     def get_success_url(self):
@@ -235,6 +235,10 @@ class LeadDeleteView(OrganisorAndLoginRequiredMixin, generic.DeleteView):
         if user.is_lvl2:
             sr = UserRelation.objects.get(user=user)
             up = sr.supervisor.userprofile
+        elif user.is_lvl3:
+            up = user.userprofile
+        elif user.is_lvl4:
+            return Lead.objects.all()
 
         # initial queryset of leads for the entire organisation
         return Lead.objects.filter(organisation=up)
