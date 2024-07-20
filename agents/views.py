@@ -339,6 +339,7 @@ class UserUpdateView(SuperAdminAndLoginRequiredMixin, generic.FormView):
         was1 = edit_user.is_lvl1
         was2 = edit_user.is_lvl2
         was3 = edit_user.is_lvl3
+        is4 = edit_user.is_lvl4
 
         # Extract form data
         first_name = form.cleaned_data['first_name']
@@ -348,9 +349,10 @@ class UserUpdateView(SuperAdminAndLoginRequiredMixin, generic.FormView):
         # Update user information
         edit_user.first_name = first_name
         edit_user.last_name = last_name
-        edit_user.is_lvl1 = user_level == 'lvl1'
-        edit_user.is_lvl2 = user_level == 'lvl2'
-        edit_user.is_lvl3 = user_level == 'lvl3'
+        if not is4:
+            edit_user.is_lvl1 = user_level == 'lvl1'
+            edit_user.is_lvl2 = user_level == 'lvl2'
+            edit_user.is_lvl3 = user_level == 'lvl3'
         edit_user.save()
 
         organisor_profile = None
