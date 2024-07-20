@@ -23,7 +23,7 @@
         <div class="d-flex align-items-center position-relative my-1 me-5">
             <i class="fa fa-search fs-3 position-absolute ms-5" style="font-size:20px;">
             </i>
-            <input type="text" data-kt-permissions-table-filter="search"
+            <input type="text" data-kt-permissions-table-filter-2="search"
                 class="form-control form-control-solid w-250px ps-13 p-1 mb-1" placeholder="搜索" />
         </div>
 
@@ -33,7 +33,7 @@
             <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                 <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
 
-                    <table class="min-w-full divide-y divide-gray-200" id="kt_permissions_table">
+                    <table class="min-w-full divide-y divide-gray-200" id="kt_permissions_table-2">
                         <thead class="bg-gray-50">
                             <tr>
                                 {% for field in lead_fields %}
@@ -74,12 +74,54 @@
                         </tbody>
                     </table>
 
+                    <script>
+
+                        "use strict";
+                        var KTUsersPermissionsList2 = function () {
+                            var t, e;
+
+                            // Assuming you pass datetime_fields_info as a global JS variable
+                            var datetimeFieldsInfo = JSON.parse('{{ datetime_fields_info|safe|escapejs }}');
+                            console.log(datetimeFieldsInfo)
+
+                            return {
+                                init: function () {
+                                    (e = document.querySelector("#kt_permissions_table-2")) && (
+                                        e.querySelectorAll("tbody tr").forEach((row) => {
+                                            const cells = row.querySelectorAll("td");
+                                            datetimeFieldsInfo.forEach((fieldInfo) => {
+                                                const index = fieldInfo.index;
+                                                const type = fieldInfo.type;
+                                                let formatStr = type === "datetime" ? "MMM DD YYYY, LT" : "MMM DD YYYY";
+                                                const formattedDate = moment(cells[index].innerHTML, formatStr).format();
+                                                cells[index].setAttribute("data-order", formattedDate);
+                                            });
+                                        }),
+                                        t = $(e).DataTable({
+                                            info: !1,
+                                            order: [],
+                                            columnDefs: [{ orderable: false, targets: -1 }] // Disable ordering on the last column (LVL3 USER ACTION)
+                                        }),
+                                        document.querySelector('[data-kt-permissions-table-filter-2="search"]').addEventListener("keyup", (function (e) {
+                                            t.search(e.target.value).draw()
+                                        }))
+                                    )
+                                }
+                            }
+                        }();
+
+                        KTUtil.onDOMContentLoaded((function () {
+                            KTUsersPermissionsList2.init()
+                        }));
+
+                    </script>
+
                 </div>
             </div>
             </div>
         </div>
-  
 
+            
         <div class="w-full mb-6 py-6 flex justify-between items-center border-b border-gray-200">
             {% if request.user.is_lvl3 %}
             <div>

@@ -16,6 +16,9 @@ from .forms import (
     FollowUpUpdateModelForm
 )
 from django.db.models import Q
+from django.db import models
+from django.core.exceptions import FieldDoesNotExist
+import json
 
 # Used by major update
 from django.core.exceptions import ObjectDoesNotExist
@@ -81,7 +84,8 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
         context = super(LeadListView, self).get_context_data(**kwargs)
         lead_fields = []
         case_field_names = []
-        leads_data = []
+        datetime_fields_info = []
+        # leads_data = []
         # Get the first lead from the queryset to extract field names
         lead = self.get_queryset().first()
         if lead:
@@ -98,25 +102,51 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
             case_fields = CaseField.objects.filter(user=lead.organisation)
             case_field_names = [field.name for field in case_fields]
 
-            for lead in self.get_queryset():
-                lead_data = {field: getattr(lead, field) for field in lead_fields}
-                for case_field in case_fields:
-                    try:
-                        case_value = CaseValue.objects.get(lead=lead, field=case_field)
-                        if case_field.field_type == 'text':
-                            lead_data[case_field.name] = case_value.value_text
-                        elif case_field.field_type == 'number':
-                            lead_data[case_field.name] = case_value.value_number
-                        elif case_field.field_type == 'date':
-                            lead_data[case_field.name] = case_value.value_date
-                    except CaseValue.DoesNotExist:
-                        lead_data[case_field.name] = None
-                lead_data['pk'] = lead.id
-                leads_data.append(lead_data)
+            combined_fields = lead_fields + case_field_names
+
+            # Check field types and save index and type if it's DateTimeField or DateField
+            for i, field_name in enumerate(combined_fields):
+                try:
+                    if field_name in lead_fields:
+                        # Check lead fields
+                        field = lead._meta.get_field(field_name)
+                        if isinstance(field, models.DateTimeField):
+                            datetime_fields_info.append({'index': i, 'type': 'datetime'})
+                        elif isinstance(field, models.DateField):
+                            datetime_fields_info.append({'index': i, 'type': 'date'})
+                    else:
+                        # Handle case fields if needed
+                        # Assuming you might have some way to access field type
+                        case_field = CaseField.objects.get(name=field_name)
+                        if case_field.field_type == 'date':
+                            datetime_fields_info.append({'index': i, 'type': 'date'})
+                        elif case_field.field_type == 'datetime':
+                            datetime_fields_info.append({'index': i, 'type': 'datetime'})
+                except FieldDoesNotExist:
+                    pass
+
+        #     for lead in self.get_queryset():
+        #         lead_data = {field: getattr(lead, field) for field in lead_fields}
+        #         for case_field in case_fields:
+        #             try:
+        #                 case_value = CaseValue.objects.get(lead=lead, field=case_field)
+        #                 if case_field.field_type == 'text':
+        #                     lead_data[case_field.name] = case_value.value_text
+        #                 elif case_field.field_type == 'number':
+        #                     lead_data[case_field.name] = case_value.value_number
+        #                 elif case_field.field_type == 'date':
+        #                     lead_data[case_field.name] = case_value.value_date
+        #             except CaseValue.DoesNotExist:
+        #                 lead_data[case_field.name] = None
+        #         lead_data['pk'] = lead.id
+        #         leads_data.append(lead_data)
+        # print(lead_fields)
+        # print(leads_data)
         context.update({
-            "basic_fields": lead_fields,
+            # "basic_fields": lead_fields,
             "lead_fields": lead_fields + case_field_names,
-            "lead_list": leads_data
+            "datetime_fields_info": json.dumps(datetime_fields_info) 
+            # "lead_list": leads_data
         })
 
         return context
