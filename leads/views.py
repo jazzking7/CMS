@@ -19,6 +19,8 @@ from django.db.models import Q
 from django.db import models
 from django.core.exceptions import FieldDoesNotExist
 import json
+from django.db import IntegrityError
+
 
 # Used by major update
 from django.core.exceptions import ObjectDoesNotExist
@@ -117,7 +119,7 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
                     else:
                         # Handle case fields if needed
                         # Assuming you might have some way to access field type
-                        case_field = CaseField.objects.get(name=field_name)
+                        case_field = CaseField.objects.get(user=lead.organisation, name=field_name)
                         if case_field.field_type == 'date':
                             datetime_fields_info.append({'index': i, 'type': 'date'})
                         elif case_field.field_type == 'datetime':
@@ -382,7 +384,13 @@ class CreateFieldView(SupervisorAndLoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         field_type = request.POST.get('fieldType')
         field_name = request.POST.get('fieldName')
-        CaseField.objects.create(user=self.request.user.userprofile, name=field_name, field_type=field_type)
+        user = self.request.user.userprofile
+        
+        try:
+            CaseField.objects.create(user=user, name=field_name, field_type=field_type)
+        except IntegrityError:
+            pass  # Ignore the error and proceed with the redirect
+
         return redirect('leads:casefield-list')
     
 class PerformanceListView(LoginRequiredMixin, generic.ListView):
