@@ -13,7 +13,8 @@ class User(AbstractUser):
     is_lvl1 = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.first_name + ' ' + self.last_name + ' ' + self.username
+        displayed_name = self.username if len(self.first_name) == 0 or len(self.last_name) == 0 else (self.first_name + ' ' + self.last_name)
+        return displayed_name
 
 
 class UserProfile(models.Model):
