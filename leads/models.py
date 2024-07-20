@@ -13,7 +13,7 @@ class User(AbstractUser):
     is_lvl1 = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.first_name + ' ' + self.last_name
+        return self.first_name + ' ' + self.last_name + ' ' + self.username
 
 
 class UserProfile(models.Model):
