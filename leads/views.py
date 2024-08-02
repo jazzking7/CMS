@@ -291,11 +291,18 @@ class FollowUpCreateView(LoginRequiredMixin, generic.CreateView):
 
     def form_valid(self, form):
         lead = Lead.objects.get(pk=self.kwargs["pk"])
-        followup = form.save(commit=False)
-        followup.lead = lead
-        followup.save()
-        # print(followup.file.url)
-        return super(FollowUpCreateView, self).form_valid(form)
+        files = self.request.FILES.getlist('file')
+
+        if files:
+            for file in files:
+                followup = FollowUp(
+                    lead=lead,
+                    file=file,
+                    notes=form.cleaned_data['notes']
+                )
+                followup.save()
+        form.save(files=files, suppressed=False)
+        return super().form_valid(form)
     
 class FollowUpUpdateView(LoginRequiredMixin, generic.UpdateView):
     template_name = "leads/followup_update.html"

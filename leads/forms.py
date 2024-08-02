@@ -176,12 +176,32 @@ class LeadUpdateForm(forms.ModelForm):
         return Lead
 
 class FollowUpModelForm(forms.ModelForm):
+
+    file = forms.FileField(widget = forms.TextInput(attrs={
+        "name": "files",
+        "type": "File",
+        "class": "form-control",
+        "multiple": "True",
+    }), required=False)
     class Meta:
         model = FollowUp
         fields = (
             'notes',
             'file'
         )
+
+    def save(self, commit=True, files=None, suppressed=True):
+        if suppressed:
+            return None
+
+        instance = super().save(commit=False)
+
+        if files:
+            return None
+
+        if commit:
+            instance.save()
+        return instance
 
 class FollowUpUpdateModelForm(forms.ModelForm):
     class Meta:
