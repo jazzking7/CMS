@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load tailwind_filters %}
+
+{% block content %}
+
+<section class="text-gray-700 body-font overflow-hidden">
+    <div class=" px-5 py-10 mx-auto">
+      <div class="lg:w-4/5 mx-auto flex flex-wrap">
+        <div class="w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
+
+          <div class="py-5 border-b border-gray-200">
+            <a class="hover:text-blue-500" href="{% url 'teams:team-root' %}">返回</a>
+          </div>
+
+            <form form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit" class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">确定</button>
+            </form>
+            
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock content %}

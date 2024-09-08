@@ -3,7 +3,8 @@ from django.contrib import admin
 from .models import (User, Lead, UserProfile, FollowUp,
                       CaseField, CaseValue, UserRelation,
                       Folder, 
-                      FolderDocument
+                      FolderDocument,
+                      Team, TeamMember
                       )
 
 
@@ -30,3 +31,5 @@ admin.site.register(CaseValue)
 admin.site.register(UserRelation)
 admin.site.register(Folder)
 admin.site.register(FolderDocument)
+admin.site.register(Team)
+admin.site.register(TeamMember)

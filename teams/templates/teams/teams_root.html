@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="text-gray-600 body-font overflow-hidden">
+    <div class=" px-3 py-2 mx-auto">
+      <div class="my-4 ml-2 mr-2 container divide-y-2 divide-gray-100">
+
+        <div class="w-full mb-5 flex justify-between items-center border-b border-gray-200">
+            <div>
+                <h1 class="text-3xl text-gray-800">团队管理</h1>
+            </div>
+
+            <div class="flex space-x-4">
+
+                {% if request.user.is_lvl4 or request.user.is_lvl2 or request.user.is_lvl3 %}
+                <div>
+                    <div class="card-toolbar mb-2">
+                        <button type="button" class="btn btn-light-primary" onclick="window.location.href=`{% url 'teams:team-user-create' %}`;">
+                            <i class="fa fa-plus" style="font-size:14px;"></i>
+                                创建用户
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if request.user.is_lvl4 or request.user.is_lvl2 or request.user.is_lvl3 %}
+                <div>
+                    <div class="card-toolbar mb-2">
+                        <button type="button" class="btn btn-light-primary" onclick="window.location.href=`{% url 'teams:team-create' %}`;">
+                            <i class="fa fa-plus" style="font-size:14px;"></i>
+                                创建团队
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+            
+
+        </div>
+
+        {% if teams %}
+        <div class="space-y-6">
+            {% if teams_with_members %}
+                {% for team, members in teams_with_members.items %}
+                    <div class="p-6 bg-white shadow-md rounded-lg">
+                        <div class="flex justify-between items-center mb-1">
+                          <a href="{% url 'teams:team-update' team.pk %}"><h2 class="text-lg font-semibold">{{ team.name }}</h2></a>
+                            <span class="text-sm text-gray-600">由 {{ team.team_leader }} 创建</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            {% if members %}
+                                {% for member in members %}
+                                    <div class="flex justify-between items-center p-2 bg-gray-100 hover:bg-blue-100 font-bold shadow-md text-black text-base rounded-md">
+                                        <a href="{% url 'teams:user-detail' member.pk %}" class="text-black hover:underline">
+                                            {{ member.username }}
+                                        </a>
+                                        <a href="{% url 'teams:team-member-delete' user_id=member.pk team_id=team.pk %}" class="text-gray-500 hover:text-red-500 text-sm">移除队员</a>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="col-span-2 p-2 bg-gray-100 rounded-md">
+                                    该团队目前没有成员
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="flex justify-between mt-4">
+                            <a href="{% url 'teams:team-add-member' team.pk %}" class="bg-blue-500 hover:bg-green-400 text-white text-sm font-semibold py-2 px-4 rounded">
+                                添加队员
+                            </a>
+                            <a href="{% url 'teams:team-delete' team.pk %}" class="bg-gray-500 hover:bg-red-500 text-white text-sm font-semibold py-2 px-4 rounded">
+                                删除团队
+                            </a>
+                        </div>
+                        
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>        
+        {% else %}
+        <p>目前没有团队</p>
+        {% endif %}
+
+
+        </div>
+    </div>
+</section>
+
+{% endblock content %}

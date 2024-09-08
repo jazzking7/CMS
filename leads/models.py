@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
+from django.contrib.auth import get_user_model
 import os
 
 # from storages.backends.s3boto3 import S3Boto3Storage
@@ -48,6 +49,7 @@ class Lead(models.Model):
     organisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     quote = models.IntegerField(default=0)
     commission = models.IntegerField(default=0)
+    co_commission = models.IntegerField(default=0)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES , null=True, blank=True)
     description = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)
@@ -167,3 +169,40 @@ class FolderDocument(models.Model):
 
     def __str__(self):
         return self.title if self.title else "NoName"
+
+# Team leader on delete -> ?
+# Assuming each leader has one team
+# Member of one team cannot be in another team
+# Default if not providing a teamleader is set to a lvl4 user
+def get_default_team_leader():
+    User = get_user_model()
+    lvl4_user = User.objects.filter(is_lvl4=True).first()
+    return lvl4_user.id
+
+class Team(models.Model):
+    name = models.CharField(max_length=255, default="team1")
+    team_leader = models.ForeignKey(User, related_name='team_leader', on_delete=models.CASCADE, default=get_default_team_leader)
+    date_added = models.DateTimeField(auto_now_add=True)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'team_leader'], name='unique_team_name_per_leader')
+        ]
+
+    def __str__(self):
+        return self.name if self.name else "NoName"
+
+class TeamMember(models.Model):
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    member = models.ForeignKey(User, on_delete=models.CASCADE)
+    date_joined = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # Ensure that a user can only be a member of a team once
+        constraints = [
+            models.UniqueConstraint(fields=['team', 'member'], name='unique_team_member')
+        ]
+
+    def __str__(self):
+        return self.member.username if self.member else "NoName"

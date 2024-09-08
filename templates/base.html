@@ -51,15 +51,21 @@
         #kt_permissions_table-2 th.sorting_desc:after {
             display: none !important;
         }
+        body, html {
+            overflow-x: hidden;
+        }
 
     </style>
 
 </head>
 <body>
     <div class="w-full">
-        {% include 'navbar.html' %}
-        {% block content %}
-        {% endblock content %}
+        {% include 'sidebar.html' %}
+        <div id="main-content-wrapper" class="transition-all duration-300 ml-0">
+            {% include 'navbar.html' %}
+            {% block content %}
+            {% endblock content %}
+        </div>
     </div>
     {% include 'scripts.html' %}
 </body>

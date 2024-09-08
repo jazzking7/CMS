@@ -4,7 +4,7 @@ from django.views import generic
 from django.shortcuts import reverse, get_object_or_404
 from leads.models import User, UserProfile, Lead, UserRelation
 from .forms import (AgentModelForm, UpdateAgentForm, UserModelForm, UpdateUserForm)
-from .mixins import SupervisorAndLoginRequiredMixin, SuperAdminAndLoginRequiredMixin
+from .mixins import (SupervisorAndLoginRequiredMixin, SuperAdminAndLoginRequiredMixin, NoLvl1AndLoginRequiredMixin)
 from django.db.models import Q
 
 class AgentListView(SupervisorAndLoginRequiredMixin, generic.ListView):
@@ -65,13 +65,32 @@ class AgentCreateView(SupervisorAndLoginRequiredMixin, generic.CreateView):
         return super(AgentCreateView, self).form_valid(form)
 
 
-class AgentDetailView(SupervisorAndLoginRequiredMixin, generic.DetailView):
+class AgentDetailView(NoLvl1AndLoginRequiredMixin, generic.DetailView):
     template_name = "agents/agent_detail.html"
     context_object_name = "agent"
 
+    def get_object(self, queryset=None):
+            # Fetch the user object based on the 'pk' passed in the URL
+            user_id = self.kwargs.get('pk')
+            return get_object_or_404(User, id=user_id)
+
+    def get_context_data(self, **kwargs):
+        # Fetch the default context data
+        context = super().get_context_data(**kwargs)
+        
+        # Get the user from the context
+        user = context['agent']
+        
+        # Add additional context data if needed
+        # For example, you can add more related data about the user
+        context['agent'] = user
+        
+        return context
+
     def get_queryset(self):
         current_user = self.request.user
-        
+        if self.request.user.is_lvl2 and self.request.user.is_lvl4:
+            return User.objects.filter(is_lvl1=True)
         # Filter users whose supervisor is the current user
         return User.objects.filter(
             user_name__supervisor=current_user,

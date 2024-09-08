@@ -58839,7 +58839,7 @@ label.rating-label:hover~.rating-label>i {
 }
 
 .text-gray-400 {
-    color: var(--bs-text-gray-400) !important
+    color: var(--bs-text-gray-400)
 }
 
 .text-hover-gray-400 {
@@ -58887,7 +58887,7 @@ label.rating-label:hover~.rating-label>i {
 }
 
 .text-gray-500 {
-    color: var(--bs-text-gray-500) !important
+    color: var(--bs-text-gray-500)
 }
 
 .text-hover-gray-500 {

@@ -2,14 +2,23 @@
 
 {% block content %}
     <section class="text-gray-700 body-font">
-        <div class=" px-5 py-24 mx-auto flex flex-wrap">
+        <div class=" px-5 py-5 mx-auto flex flex-wrap">
+
             <div class="w-full mb-6 py-6 flex justify-between items-center border-b border-gray-200">
+                
                 <div>
-                    <h1 class="text-4xl text-gray-800">团队成员</h1>
+                    <h1 class="text-4xl text-gray-800">公司成员</h1>
                 </div>
+
                 <div>
-                    <a class="text-gray-500 hover:text-blue-500" href="{% url 'agents:agent-create' %}">创建新成员</a>
+                    <div class="card-toolbar pr-10">
+                        <button type="button" class="btn btn-light-primary" onclick="window.location.href=`{% url 'agents:agent-create' %}`;">
+                            <i class="fa fa-plus" style="font-size:14px;"></i>
+                                创建新成员
+                            </button>
+                    </div>
                 </div>
+                
             </div>
 
             <div class="d-flex align-items-center position-relative my-1 me-5">

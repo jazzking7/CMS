@@ -19,6 +19,7 @@ urlpatterns = [
     path('leads/',  include('leads.urls', namespace="leads")),
     path('agents/',  include('agents.urls', namespace="agents")),
     path('folders/', include('folders.urls', namespace="folders")),
+    path('teams/', include('teams.urls', namespace="teams")),
     path('reset-password/', PasswordResetView.as_view(), name='reset-password'),
     path('password-reset-done/', PasswordResetDoneView.as_view(), name='password_reset_done'),
     path('password-reset-confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),

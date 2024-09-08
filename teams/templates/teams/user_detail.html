@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="text-gray-700 body-font overflow-hidden">
+    <div class=" px-5 py-12 mx-auto">
+      <div class="lg:w-4/5 mx-auto flex flex-wrap">
+
+
+        <div class="py-2 border-b border-gray-200">
+          <a class="hover:text-blue-500" href="{% url 'teams:team-root' %}">返回</a>
+        </div>
+
+        <div class="w-full lg:pr-10 lg:py-6 mb-6 lg:mb-0">
+            <h2 class="text-lg title-font text-gray-500 tracking-widest">队员</h2>
+            <h1 class="text-gray-900 text-3xl title-font font-medium mb-4">{{ user.username }}</h1>
+
+            <div class="flex border-t border-gray-300 py-2">
+                <span class="text-gray-500">Full Name</span>
+                <span class="ml-auto text-gray-900">{{ user.first_name }} {{ user.last_name }}</span>
+            </div>
+            <div class="flex border-t border-gray-300 py-2">
+                <span class="text-gray-500">Email</span>
+                <span class="ml-auto text-gray-900">{{ user.email }}</span>
+            </div>
+            <div class="flex border-t border-gray-300 py-2">
+                <span class="text-gray-500">Username</span>
+                <span class="ml-auto text-gray-900">{{ user.username }}</span>
+            </div>
+            <div class="flex border-t border-gray-300 py-2">
+                <span class="text-gray-500">User Permission Level</span>
+                {% if user.is_lvl4 %}
+                <span class="ml-auto text-gray-900">{{ 4 }}</span>
+                {% elif user.is_lvl2 %}
+                <span class="ml-auto text-gray-900">{{ 2 }}</span>
+                {% elif user.is_lvl3 %}
+                <span class="ml-auto text-gray-900">{{ 3 }}</span>
+                {% elif user.is_lvl1 %}
+                <span class="ml-auto text-gray-900">{{ 1 }}</span>
+                {% endif %}
+            </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock content %}

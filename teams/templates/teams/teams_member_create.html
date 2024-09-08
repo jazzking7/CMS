@@ -6,10 +6,12 @@
 <div class="max-w-lg mx-auto">
 
     <div class="py-5 border-b border-gray-200">
-        <a class="hover:text-blue-500" href="{% url 'agents:agent-list' %}">回到组员列表</a>
+
+            <a class="hover:text-blue-500" href="{% url 'teams:team-root' %}">返回</a>
+
     </div>
 
-    <h1 class="text-4xl text-gray-800">创建新组员</h1>
+    <h1 class="text-4xl text-gray-800 mb-4">添加新队员</h1>
     <form method="post">
         {% csrf_token %}
         {{ form|crispy }}
