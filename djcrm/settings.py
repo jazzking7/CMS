@@ -60,7 +60,9 @@ INSTALLED_APPS = [
     'leads',
     'agents',
     'folders',
-    'teams'
+    'teams',
+    'performances',
+    'reports'
 ]
 
 MIDDLEWARE = [

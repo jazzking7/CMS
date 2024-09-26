@@ -1,0 +1,121 @@
+<div class="px-5 ml-4 py-1 bg-gray-100 rounded-lg">
+   
+    <div class="flex items-center space-x-4">
+
+        <!-- Time Range Selector -->
+        <div>
+        <label for="time-range" class="block text-sm font-semibold mb-1">区间</label>
+        <select id="time-range" class="w-full mt-1 p-2 border rounded-md" onchange="toggleTimeInputs()">
+            <option value="all">全部</option>
+            <option value="years">年</option>
+            <option value="quarters">季度</option>
+            <option value="months">月份</option>
+            <option value="custom">自定区间</option>
+        </select>
+        </div>
+
+        <!-- Year Selection -->
+        <div id="year-input" class="hidden">
+            <label for="year" class="block text-sm font-semibold mb-1">年</label>
+            <input type="number" id="year" class="w-full p-2 border rounded-md" min="2000" value="2024">
+        </div>
+
+        <!-- Quarter Selection -->
+        <div id="quarter-input" class="hidden flex items-center">
+
+            <div>
+                <label for="quarter-year" class="block text-sm font-semibold mb-1">年</label>
+                <input type="number" id="quarter-year" class="w-full p-2 border rounded-md" min="2000" value="2024">
+            </div>
+
+            <div class="ml-1">
+                <label for="quarter" class="block text-sm font-semibold mb-1">季度</label>
+                <select id="quarter" class="w-full p-2 mt-1 border rounded-md">
+                    <option value="Q1">Q1</option>
+                    <option value="Q2">Q2</option>
+                    <option value="Q3">Q3</option>
+                    <option value="Q4">Q4</option>
+                </select>
+            </div>
+
+        </div>
+
+        <!-- Month Selection -->
+        <div id="month-input" class="hidden flex items-center">
+
+            <div>
+                <label for="month-year" class="block text-sm font-semibold mb-1">年</label>
+                <input type="number" id="month-year" class="w-full p-2 border rounded-md" min="2000" value="2024">    
+            </div>
+
+            <div class="ml-1">
+                <label for="month" class="block text-sm font-semibold mb-1">月</label>
+                <select id="month" class="w-full p-2 mt-1 border rounded-md">
+                    <option value="1">一月</option>
+                    <option value="2">二月</option>
+                    <option value="3">三月</option>
+                    <option value="4">四月</option>
+                    <option value="5">五月</option>
+                    <option value="6">六月</option>
+                    <option value="7">七月</option>
+                    <option value="8">八月</option>
+                    <option value="9">九月</option>
+                    <option value="10">十月</option>
+                    <option value="11">十一月</option>
+                    <option value="12">十二月</option>
+                </select>
+            </div>
+
+        </div>
+
+        <!-- Custom Time Range -->
+        <div id="custom-input" class="hidden flex items-center">
+
+            <div>
+                <label for="start-datetime" class="block text-sm font-semibold mb-1">开始</label>
+                <input type="datetime-local" id="start-datetime" class="w-full p-2 border rounded-md">    
+            </div>
+            
+            <div class="ml-1">
+                <label for="end-datetime" class="block text-sm font-semibold mb-1">结束</label>
+                <input type="datetime-local" id="end-datetime" class="w-full p-2 border rounded-md">    
+            </div>
+
+        </div>
+
+        <!-- Confirm Button -->
+        <div class="flex items-center ml-4 mt-7">
+            <button class="bg-gray-500 text-white px-4 py-1 rounded-lg hover:bg-green-400 font-semibold">
+                确定
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function toggleTimeInputs() {
+    const timeRange = document.getElementById('time-range').value;
+    // Hide all inputs initially
+    document.getElementById('year-input').classList.add('hidden');
+    document.getElementById('quarter-input').classList.add('hidden');
+    document.getElementById('month-input').classList.add('hidden');
+    document.getElementById('custom-input').classList.add('hidden');
+
+    if (timeRange === 'years') {
+        document.getElementById('year-input').classList.remove('hidden');
+    } else if (timeRange === 'quarters') {
+        document.getElementById('quarter-input').classList.remove('hidden');
+    } else if (timeRange === 'months') {
+        document.getElementById('month-input').classList.remove('hidden');
+    } else if (timeRange === 'custom') {
+        document.getElementById('custom-input').classList.remove('hidden');
+    }
+}
+</script>
+
+<style>
+.hidden {
+    display: none;
+}
+</style>

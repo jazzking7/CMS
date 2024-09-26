@@ -177,7 +177,7 @@ class FolderDocument(models.Model):
 def get_default_team_leader():
     User = get_user_model()
     lvl4_user = User.objects.filter(is_lvl4=True).first()
-    return lvl4_user.id
+    return lvl4_user.id if lvl4_user else 1
 
 class Team(models.Model):
     name = models.CharField(max_length=255, default="team1")

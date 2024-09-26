@@ -77,7 +77,9 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
                     organisation=up, 
                     #agent__isnull=False
                 )
-                queryset = queryset.filter(agent=user)
+                queryset = queryset.filter(
+                    Q(agent=user) | Q(manager=user)
+                )
             else:
                 queryset = Lead.objects.none()
         return queryset
@@ -399,96 +401,7 @@ class CreateFieldView(SupervisorAndLoginRequiredMixin, View):
             pass  # Ignore the error and proceed with the redirect
 
         return redirect('leads:casefield-list')
-    
-class PerformanceListView(LoginRequiredMixin, generic.ListView):
-    template_name = "leads/performance_list.html"
-    context_object_name = 'performances'
-
-    def get_queryset(self):
-        user = self.request.user
-        if user.is_lvl4:
-            queryset = Lead.objects.all()
-        elif user.is_lvl3:
-            queryset = Lead.objects.filter(organisation=user.userprofile)
-        elif user.is_lvl2:
-            sr = UserRelation.objects.get(user=user)
-            up = sr.supervisor.userprofile
-            queryset = Lead.objects.filter(organisation=up)
-        elif user.is_lvl1:
-            sr = UserRelation.objects.get(user=user)
-            up = sr.supervisor.userprofile
-            queryset = Lead.objects.filter(organisation=up)
-        return queryset
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        leads = self.get_queryset()
-        user = self.request.user
-
-        up = None
-        if user.is_lvl3:
-            up = user.userprofile
-        elif user.is_lvl2:
-            sr = UserRelation.objects.get(user=user)
-            up = sr.supervisor.userprofile
-        elif user.is_lvl1:
-            sr = UserRelation.objects.get(user=user)
-            up = sr.supervisor.userprofile
-
-        all_agents = []
-        if user.is_lvl4:
-            all_agents = User.objects.all()
-        elif user.is_lvl3:
-            all_agents = User.objects.filter(
-                Q(is_lvl3=True, userprofile=up) |
-                Q(Q(is_lvl1=True) | Q(is_lvl2=True), user_name__supervisor__userprofile=up)
-            )
-        elif user.is_lvl2:
-            all_agents = User.objects.filter(
-                Q(is_lvl3=True, userprofile=up) |
-                Q(Q(is_lvl1=True) | Q(is_lvl2=True), user_name__supervisor__userprofile=up)
-            )
-        elif user.is_lvl1:
-            all_agents = User.objects.filter(
-                Q(is_lvl3=True, userprofile=up) |
-                Q(Q(is_lvl1=True) | Q(is_lvl2=True), user_name__supervisor__userprofile=up)
-            )
-
-        agent_data = {}
-        for agent in all_agents:
-            agent_data[agent] = {
-                'username': agent.username,
-                'num_leads': 0,
-                'total_commission': 0,
-                'num_completed_leads': 0,
-                'completed_lead_commission': 0,
-            }
-
-        for lead in leads:
-            if lead.status == "取消":
-                continue 
-            if lead.agent:
-                agent_info = agent_data[lead.agent]
-                agent_info['num_leads'] += 1
-                commission = int((lead.quote) * (int(lead.commission) / 100))
-                agent_info['total_commission'] += commission
-                if lead.status=='已完成':
-                    agent_info['num_completed_leads'] += 1
-                    agent_info['completed_lead_commission'] += commission
-
-        performances = [
-            [
-                agent_info['username'],
-                agent_info['num_leads'],
-                agent_info['total_commission'],
-                agent_info['num_completed_leads'],
-                agent_info['completed_lead_commission'],
-            ]
-            for agent_info in agent_data.values()
-        ]
-        context['performances'] = performances
-        return context
-    
+        
 class LeadJsonView(generic.View):
 
     def get(self, request, *args, **kwargs):

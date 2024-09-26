@@ -115,6 +115,8 @@ class UserModelForm(forms.ModelForm):
         cleaned_data = super().clean()
         password1 = cleaned_data.get("password1")
         password2 = cleaned_data.get("password2")
+        email = cleaned_data.get('email')
+        username = cleaned_data.get('username')
 
         if not self.is_updating:
             if not password1:
@@ -124,6 +126,13 @@ class UserModelForm(forms.ModelForm):
         elif password1 or password2:
             if password1 != password2:
                 raise ValidationError("Passwords do not match.")
+            
+                # Check email and username fields
+        if not self.is_updating:
+            if email and User.objects.filter(email=email).exists():
+                raise ValidationError("A user with this email already exists.")
+            if username and User.objects.filter(username=username).exists():
+                raise ValidationError("A user with this username already exists.")
 
         return cleaned_data
 

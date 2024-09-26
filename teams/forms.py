@@ -56,17 +56,19 @@ class TeamMemberForm(forms.ModelForm):
         if user:
             if user.is_lvl2:
                 # If lvl2, show only lvl1 users who share the same supervisor as the request user
-                supervisor = UserRelation.objects.filter(user=user).first()
-                if supervisor:
+                supervisor_relation = UserRelation.objects.filter(user=user).first()
+                if supervisor_relation:
+                    # Filter lvl1 users who have the same supervisor
                     self.fields['member'].queryset = User.objects.filter(
-                        is_lvl1=True, userrelation__supervisor=supervisor.supervisor
+                        is_lvl1=True,
+                        user_name__supervisor=supervisor_relation.supervisor
                     )
             elif user.is_lvl3:
                 # If lvl3, show all lvl1 users under their management
-                lvl1_users = User.objects.filter(
-                    is_lvl1=True, userrelation__supervisor__in=UserRelation.objects.filter(supervisor=user)
+                self.fields['member'].queryset = User.objects.filter(
+                    is_lvl1=True,
+                    user_name__supervisor=user  # Find lvl1 users whose supervisor's supervisor is the lvl3 user
                 )
-                self.fields['member'].queryset = lvl1_users
             elif user.is_lvl4:
                 # If lvl4, show all lvl1 users
                 self.fields['member'].queryset = User.objects.filter(is_lvl1=True)
@@ -99,11 +101,13 @@ class UserCreateForm(forms.ModelForm):
         if not self.is_updating and User.objects.filter(username=username).exists():
             raise ValidationError("A user with this username already exists.")
         return username
-#
+
     def clean(self):
         cleaned_data = super().clean()
         password1 = cleaned_data.get("password1")
         password2 = cleaned_data.get("password2")
+        email = cleaned_data.get('email')
+        username = cleaned_data.get('username')
 
         if not self.is_updating:
             if not password1:
@@ -113,6 +117,13 @@ class UserCreateForm(forms.ModelForm):
         elif password1 or password2:
             if password1 != password2:
                 raise ValidationError("Passwords do not match.")
+            
+                # Check email and username fields
+        if not self.is_updating:
+            if email and User.objects.filter(email=email).exists():
+                raise ValidationError("A user with this email already exists.")
+            if username and User.objects.filter(username=username).exists():
+                raise ValidationError("A user with this username already exists.")
 
         return cleaned_data
 

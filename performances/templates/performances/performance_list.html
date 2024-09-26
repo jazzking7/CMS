@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="text-gray-700 body-font">
+    <div>
+        <h1 class="text-4xl pl-5 py-5 text-gray-800">组员业绩</h1>
+    </div>
+
+    <!-- Select -->
+    <form method="GET" action="{% url 'performances:performance_list' curr_id %}" id="timeSetterForm" onsubmit="saveTimeRangeToLocalStorage()">
+        <div class="px-5 py-1 bg-gray-100 rounded-lg">
+            <div class="flex items-center space-x-4">
+
+                <!-- Time Range Selector -->
+                <div>
+                    <label for="time-range" class="block text-sm font-semibold mb-1">区间</label>
+                    <select id="time-range" name="time_range" class="w-full mt-1 p-2 border rounded-md" onchange="toggleTimeInputs()">
+                        <option value="all">全部</option>
+                        <option value="years">年</option>
+                        <option value="quarters">季度</option>
+                        <option value="months">月份</option>
+                        <option value="custom">自定区间</option>
+                    </select>
+                </div>
+
+                <!-- Year Selection -->
+                <div id="year-input" class="hidden">
+                    <label for="year" class="block text-sm font-semibold mb-1">年</label>
+                    <input type="number" id="year" name="year" class="w-full p-2 border rounded-md" min="2000" value="2024">
+                </div>
+
+                <!-- Quarter Selection -->
+                <div id="quarter-input" class="hidden flex items-center">
+                    <div>
+                        <label for="quarter-year" class="block text-sm font-semibold mb-1">年</label>
+                        <input type="number" id="quarter-year" name="quarter_year" class="w-full p-2 border rounded-md" min="2000" value="2024">
+                    </div>
+
+                    <div class="ml-1">
+                        <label for="quarter" class="block text-sm font-semibold mb-1">季度</label>
+                        <select id="quarter" name="quarter" class="w-full p-2 mt-1 border rounded-md">
+                            <option value="Q1">Q1</option>
+                            <option value="Q2">Q2</option>
+                            <option value="Q3">Q3</option>
+                            <option value="Q4">Q4</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Month Selection -->
+                <div id="month-input" class="hidden flex items-center">
+                    <div>
+                        <label for="month-year" class="block text-sm font-semibold mb-1">年</label>
+                        <input type="number" id="month-year" name="month_year" class="w-full p-2 border rounded-md" min="2000" value="2024">    
+                    </div>
+
+                    <div class="ml-1">
+                        <label for="month" class="block text-sm font-semibold mb-1">月</label>
+                        <select id="month" name="month" class="w-full p-2 mt-1 border rounded-md">
+                            <option value="1">一月</option>
+                            <option value="2">二月</option>
+                            <option value="3">三月</option>
+                            <option value="4">四月</option>
+                            <option value="5">五月</option>
+                            <option value="6">六月</option>
+                            <option value="7">七月</option>
+                            <option value="8">八月</option>
+                            <option value="9">九月</option>
+                            <option value="10">十月</option>
+                            <option value="11">十一月</option>
+                            <option value="12">十二月</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Custom Time Range -->
+                <div id="custom-input" class="hidden flex items-center">
+                    <div>
+                        <label for="start-datetime" class="block text-sm font-semibold mb-1">开始</label>
+                        <input type="datetime-local" id="start-datetime" name="start_datetime" class="w-full p-2 border rounded-md">    
+                    </div>
+
+                    <div class="ml-1">
+                        <label for="end-datetime" class="block text-sm font-semibold mb-1">结束</label>
+                        <input type="datetime-local" id="end-datetime" name="end_datetime" class="w-full p-2 border rounded-md">    
+                    </div>
+                </div>
+
+                <!-- Confirm Button -->
+                <div class="flex items-center ml-4 mt-7">
+                    <button type="submit" class="bg-gray-500 text-white px-4 py-1 rounded-lg hover:bg-green-400 font-semibold">
+                        确定
+                    </button>
+                </div>
+                
+            </div>
+        </div>
+    </form>
+
+    <script>
+    function toggleTimeInputs() {
+        const timeRange = document.getElementById('time-range').value;
+        document.getElementById('year-input').classList.add('hidden');
+        document.getElementById('quarter-input').classList.add('hidden');
+        document.getElementById('month-input').classList.add('hidden');
+        document.getElementById('custom-input').classList.add('hidden');
+
+        if (timeRange === 'years') {
+            document.getElementById('year-input').classList.remove('hidden');
+        } else if (timeRange === 'quarters') {
+            document.getElementById('quarter-input').classList.remove('hidden');
+        } else if (timeRange === 'months') {
+            document.getElementById('month-input').classList.remove('hidden');
+        } else if (timeRange === 'custom') {
+            document.getElementById('custom-input').classList.remove('hidden');
+        }
+    }
+
+    function saveTimeRangeToLocalStorage() {
+        const timeRange = document.getElementById('time-range').value;
+        const year = document.getElementById('year').value;
+        const quarterYear = document.getElementById('quarter-year').value;
+        const quarter = document.getElementById('quarter').value;
+        const monthYear = document.getElementById('month-year').value;
+        const month = document.getElementById('month').value;
+        const startDatetime = document.getElementById('start-datetime').value;
+        const endDatetime = document.getElementById('end-datetime').value;
+
+        const timeRangeData = {
+            timeRange,
+            year,
+            quarterYear,
+            quarter,
+            monthYear,
+            month,
+            startDatetime,
+            endDatetime
+        };
+
+        localStorage.setItem('timeRangeSettings', JSON.stringify(timeRangeData));
+    }
+
+    function restoreTimeRangeFromLocalStorage() {
+        const savedSettings = localStorage.getItem('timeRangeSettings');
+        if (savedSettings) {
+            const { timeRange, year, quarterYear, quarter, monthYear, month, startDatetime, endDatetime } = JSON.parse(savedSettings);
+
+            // Check for empty or invalid custom date range
+            if (timeRange === 'custom') {
+                const startDate = new Date(startDatetime);
+                const endDate = new Date(endDatetime);
+
+                // If end date is greater than start date or any date is empty, reset to "all"
+                if (!startDatetime || !endDatetime || endDate < startDate) {
+                    resetToAll();
+                    return;
+                }
+            }
+
+            // Restore the time range and values
+            document.getElementById('time-range').value = timeRange;
+            toggleTimeInputs();
+
+            if (timeRange === 'years') {
+                document.getElementById('year').value = year;
+            } else if (timeRange === 'quarters') {
+                document.getElementById('quarter-year').value = quarterYear;
+                document.getElementById('quarter').value = quarter;
+            } else if (timeRange === 'months') {
+                document.getElementById('month-year').value = monthYear;
+                document.getElementById('month').value = month;
+            } else if (timeRange === 'custom') {
+                document.getElementById('start-datetime').value = startDatetime;
+                document.getElementById('end-datetime').value = endDatetime;
+            }
+        }
+    }
+
+    // Reset form to 'all'
+    function resetToAll() {
+        document.getElementById('time-range').value = 'all';
+        toggleTimeInputs();
+    }
+
+    // Ensure the function is run once the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', restoreTimeRangeFromLocalStorage);
+    </script>
+
+    <style>
+    .hidden {
+        display: none;
+    }
+    </style>
+
+
+    <div class=" px-5 py-3 mx-auto flex flex-wrap">
+        
+        <div class="d-flex align-items-center position-relative my-1 me-5">
+            <i class="fa fa-search fs-3 position-absolute ms-5" style="font-size:20px;">
+            </i>
+            <input type="text" data-kt-permissions-table-filter="search"
+                class="form-control form-control-solid w-250px ps-13 p-1 mb-1" placeholder="搜索" />
+        </div>
+
+        <div class="flex flex-col w-full">
+            <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                    <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+
+                        <table class="min-w-full divide-y divide-gray-200" id="kt_permissions_table">
+                            <thead class="bg-gray-50">
+                                <tr>
+
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        用户名
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        案子数量
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        总提成
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        完成案子
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        积累提成
+                                    </th>
+                                    <th class="px-1 py-1"></th> 
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for per in performances %}
+                                <tr class="bg-white">
+                                    {% for data in per.member_stats %}
+                                        {% if forloop.first %}
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <a href="{% url 'performances:user_performance_list' per.member_id %}" class="text-blue-600 hover:underline">
+                                                {{ data }}
+                                            </a>
+                                        </td>
+                                        {% else %}
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {{ data }}
+                                        </td>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <td class="px-1 py-1"></td>
+                                </tr>
+                                {% empty %}
+                                <p>There are currently no performance</p>
+                                {% endfor %}
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+  
+
+
+
+    </div>
+</section>
+{% endblock content %}

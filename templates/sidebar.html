@@ -12,14 +12,18 @@
         <div class="mt-10">
             <div class="flex flex-col font-semibold">
                 <div class="mt-4 hover:bg-green-300 py-1 text-center rounded-xl">
+                    <a href="{% url 'performances:personal_work' %}" class="text-white">我的案子</a>
+                </div>
+                <div class="mt-4 hover:bg-green-300 py-1 text-center rounded-xl">
                     <a href="{% url 'teams:team-root' %}" class="text-white">团队管理</a>
                 </div>
                 <div class="mt-4 hover:bg-green-300 py-1 text-center rounded-xl">
-                    <a href="#" class="text-white">业绩统计</a>
+                    <a href="{% url 'performances:team_performances' %}" class="text-white">绩效统计</a>
                 </div>
                 <div class="mt-4 hover:bg-green-300 py-1 text-center rounded-xl">
                     <a href="#" class="text-white">工作报告</a>
                 </div>
+            </div>
             </div>
         </div>
         

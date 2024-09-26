@@ -3,7 +3,6 @@ from django.urls import path
 from .views import (
     LeadListView, LeadDetailView, LeadCreateView, LeadUpdateView, LeadDeleteView, LeadJsonView, 
     FollowUpCreateView, FollowUpUpdateView, FollowUpDeleteView, CreateFieldView, CaseFieldListView, CreateFieldDeleteView,
-    PerformanceListView
 )
 
 app_name = "leads"
@@ -21,5 +20,4 @@ urlpatterns = [
     path('create_field/', CreateFieldView.as_view(), name='create-field'),
     path('casefields/', CaseFieldListView.as_view(), name='casefield-list'),
     path('casefields/<int:pk>/delete', CreateFieldDeleteView.as_view(), name='casefield-delete'),
-    path('performance', PerformanceListView.as_view(), name='performance'),
 ]
