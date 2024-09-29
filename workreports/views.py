@@ -64,11 +64,11 @@ class WorkReportListView(LoginRequiredMixin, generic.ListView):
                 Q(id__in=Team.objects.filter(id__in=team_memberships).values_list('team_leader', flat=True))
             ).distinct()
 
-            # Step 3: Include the user in the team_users queryset
-            team_users = team_users | User.objects.filter(id=user.id)
+            team_users_set = set(team_users)  # Convert queryset to a set
+            team_users_set.add(user) 
 
             # Step 4: Fetch all work reports created by the combined group
-            queryset = WorkReport.objects.filter(creator__in=team_users).distinct()
+            queryset = WorkReport.objects.filter(creator__in=team_users_set).distinct()
 
         elif user.is_lvl2:
             # Step 1: Get all teams the user leads
