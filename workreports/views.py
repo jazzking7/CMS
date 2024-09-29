@@ -55,20 +55,34 @@ class WorkReportListView(LoginRequiredMixin, generic.ListView):
         user = self.request.user
         queryset = None
         if user.is_lvl1:
-            # For lvl1, show reports made by members from all teams they belong to
-            # Get all teams the user is a member of
-            team_members = TeamMember.objects.filter(member=user).values_list('team', flat=True)
-            # Get all reports from team members and team leaders of those teams
-            queryset = WorkReport.objects.filter(
-                creator__in=TeamMember.objects.filter(team__in=team_members).values_list('member', flat=True)
+            # Step 1: Get all teams the user is a member of
+            team_memberships = TeamMember.objects.filter(member=user).values_list('team', flat=True)
+
+            # Step 2: Get all team members and team leaders from those teams
+            team_users = User.objects.filter(
+                Q(id__in=TeamMember.objects.filter(team__in=team_memberships).values_list('member', flat=True)) |
+                Q(id__in=Team.objects.filter(id__in=team_memberships).values_list('team_leader', flat=True))
             ).distinct()
 
+            # Step 3: Include the user in the team_users queryset
+            team_users = team_users | User.objects.filter(id=user.id)
+
+            # Step 4: Fetch all work reports created by the combined group
+            queryset = WorkReport.objects.filter(creator__in=team_users).distinct()
+
         elif user.is_lvl2:
-            # For lvl2, show reports made by members from all teams they lead
-            teams_lead = Team.objects.filter(team_leader=user).values_list('id', flat=True)
-            queryset = WorkReport.objects.filter(
-                creator__in=TeamMember.objects.filter(team__in=teams_lead).values_list('member', flat=True)
+            # Step 1: Get all teams the user leads
+            teams_led = Team.objects.filter(team_leader=user).values_list('id', flat=True)
+
+            # Step 2: Get all team members and include the user
+            team_users = User.objects.filter(
+                Q(id__in=TeamMember.objects.filter(team__in=teams_led).values_list('member', flat=True)) |
+                Q(id=user.id)
             ).distinct()
+
+            # Step 3: Fetch all work reports created by the combined group
+            queryset = WorkReport.objects.filter(creator__in=team_users).distinct()
+
         elif user.is_lvl3:
             queryset = WorkReport.objects.filter(organisation=user.userprofile)
         elif user.is_lvl4:
@@ -141,7 +155,7 @@ class WorkReportDeleteView(LoginRequiredMixin, generic.DeleteView):
         # Redirect to the report list page after successful deletion
         return reverse('workreports:report-list')
     
-class WorkReportUpdateView(generic.UpdateView):
+class WorkReportUpdateView(LoginRequiredMixin, generic.UpdateView):
     model = WorkReport
     form_class = WorkReportUpdateForm
     template_name = 'workreports/workreport_update.html'  # Your template for the form
