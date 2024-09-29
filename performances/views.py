@@ -152,6 +152,7 @@ class SingleTeamPerformanceListView(LoginRequiredMixin, generic.ListView):
 
         context['performances'] = performances
         context['curr_id'] = self.kwargs.get('team_id')
+        context['curr_team'] = team
         return context
 
 class TeamsPerformanceListView(LoginRequiredMixin, generic.ListView):
