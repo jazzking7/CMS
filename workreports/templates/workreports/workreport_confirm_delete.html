@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load tailwind_filters %}
+
+{% block content %}
+
+<div class="max-w-lg mx-auto">
+    <a class="hover:text-blue-500" href="{% url 'workreports:report-detail' report.id %}">返回</a>
+    <div class="py-5 border-t border-gray-200 mt-1">
+        <h1 class="text-4xl text-gray-800">确定要删除报告?</h1>
+    </div>
+    <form method="post" class="mt-2">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type='submit' class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">
+            删吧！
+        </button>
+    </form>
+</div>
+
+{% endblock content %}

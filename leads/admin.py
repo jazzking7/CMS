@@ -4,7 +4,7 @@ from .models import (User, Lead, UserProfile, FollowUp,
                       CaseField, CaseValue, UserRelation,
                       Folder, 
                       FolderDocument,
-                      Team, TeamMember
+                      Team, TeamMember, WorkReport
                       )
 
 
@@ -33,3 +33,4 @@ admin.site.register(Folder)
 admin.site.register(FolderDocument)
 admin.site.register(Team)
 admin.site.register(TeamMember)
+admin.site.register(WorkReport)

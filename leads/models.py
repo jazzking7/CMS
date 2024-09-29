@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.contrib.auth import get_user_model
 import os
-
+import datetime
 # from storages.backends.s3boto3 import S3Boto3Storage
 from django.core.files.base import ContentFile
 
@@ -206,3 +206,34 @@ class TeamMember(models.Model):
 
     def __str__(self):
         return self.member.username if self.member else "NoName"
+
+def handle_upload_work_report(instance, filename):
+    directory = f"workreports/{instance.organisation}/"
+
+    full_directory = os.path.join(settings.MEDIA_ROOT, directory)
+
+    if not os.path.exists(full_directory):
+        os.makedirs(full_directory)
+
+    name, ext = os.path.splitext(filename)
+    
+    target_file = os.path.join(full_directory, filename)
+    
+    if os.path.exists(target_file):
+        count = 1
+        while os.path.exists(target_file):
+            modified_filename = f"{name}_{count}{ext}"
+            target_file = os.path.join(full_directory, modified_filename)
+            count += 1
+    result = os.path.join(directory, os.path.basename(target_file))
+    return result
+    
+class WorkReport(models.Model):
+    title = models.CharField(max_length=500, default="work_report")
+    organisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    file = models.FileField(upload_to=handle_upload_work_report, blank=True, null=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+ 
+    def __str__(self):
+        return self.title if self.title else "NoName"
