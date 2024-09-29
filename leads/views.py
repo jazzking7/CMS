@@ -294,7 +294,7 @@ class FollowUpCreateView(LoginRequiredMixin, generic.CreateView):
     def form_valid(self, form):
         lead = Lead.objects.get(pk=self.kwargs["pk"])
         files = self.request.FILES.getlist('file')
-
+        form.instance.lead = lead
         if files:
             for file in files:
                 followup = FollowUp(

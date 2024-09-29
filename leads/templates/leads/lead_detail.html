@@ -5,7 +5,8 @@
 <section class="text-gray-700 body-font overflow-hidden">
     <div class=" px-5 py-5 mx-auto">
         <div class="lg:w-4/5 mx-auto mb-4 flex flex-wrap">
-            <div class="w-full lg:pr-10 lg:py-6 mb-5 lg:mb-0">
+
+            <div class="w-full lg:pr-10 lg:py-6 lg:mb-0">
                 <div class="w-full flex items-center justify-between space-x-6">
                     <div class="flex-1 truncate">
                         <div class="flex items-center space-x-3">
@@ -25,18 +26,14 @@
                     </a>    
                 </div>
                 <div class="flex border-t border-gray-300 py-2">
-                    <span class="text-gray-500">Age</span>
-                    <span class="ml-auto text-gray-900">{{ lead.age }}</span>
-                </div>
-                <div class="flex border-t border-gray-300 py-2">
-                    <span class="text-gray-500">Email</span>
+                    <span class="text-gray-600">Email</span>
                     <span class="ml-auto text-gray-900">{{ lead.email }}</span>
                 </div>
                 <div class="flex border-t border-b mb-6 border-gray-300 py-2">
-                    <span class="text-gray-500">Phone Number</span>
+                    <span class="text-gray-600">Phone Number</span>
                     <span class="ml-auto text-gray-900">{{ lead.phone_number }}</span>
                 </div>
-                <p class="mt-1 text-lg text-gray-500 break-words">{{ lead.description }}</p>
+                <p class="mt-1 text-md text-gray-600 break-words">{{ lead.description }}</p>
             </div>
 
             <a href="{% url 'leads:lead-followup-create' lead.pk %}" class="text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">添加跟进</a>
