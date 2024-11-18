@@ -9,9 +9,16 @@
             <h1 class="text-3xl text-gray-800 mb-4">文档</h1>
         </div>
 
-        <a href="{% url 'folders:subfolder-add' curr_folder.id %}"><div class="relative py-3 text-blue-800 hover:text-blue-500 cursor-pointer">
-            <h1 class="text-3xl text-gray-800 mb-4">+</h1>
-        </div></a>
+        <a href="{% url 'folders:subfolder-add' curr_folder.id %}">
+            <div class="relative py-3 text-blue-800 hover:text-blue-500 cursor-pointer">
+                <div class="relative py-3 text-blue-800 hover:text-blue-500 cursor-pointer">
+                    <div class="inline-flex items-center space-x-2">
+                        <h4 class="text-gray-800 mb-0">文件夹</h4>
+                        <h1 class="text-3xl text-gray-800 mb-0">+</h1>
+                    </div>
+                </div>
+            </div>
+        </a>
 
         <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-4">
             {% for folder in curr_folders %}
@@ -31,7 +38,12 @@
 
         <a href="{% url 'folders:subfoldercontent-add' curr_folder.id %}">
             <div class="relative py-3 text-blue-800 hover:text-blue-500 cursor-pointer">
-                <h1 class="text-3xl text-gray-800 mb-4">+</h1>
+                <div class="relative py-3 text-blue-800 hover:text-blue-500 cursor-pointer">
+                    <div class="inline-flex items-center space-x-2">
+                        <h4 class="text-gray-800 mb-0">文件</h4>
+                        <h1 class="text-3xl text-gray-800 mb-0">+</h1>
+                    </div>
+                </div>
             </div>
         </a>
 

@@ -2,6 +2,7 @@ import random
 from django.core.mail import send_mail
 from django.views import generic
 from django.shortcuts import reverse, get_object_or_404
+from django.http import HttpResponseRedirect
 from leads.models import User, UserProfile, Lead, UserRelation
 from .forms import (AgentModelForm, UpdateAgentForm, UserModelForm, UpdateUserForm)
 from .mixins import (SupervisorAndLoginRequiredMixin, SuperAdminAndLoginRequiredMixin, NoLvl1AndLoginRequiredMixin)
@@ -298,6 +299,30 @@ class UserDetailView(SuperAdminAndLoginRequiredMixin, generic.DetailView):
     template_name = "agents/user_detail.html"
     context_object_name = "show_user"
     model = User
+
+class UserDeleteOptionView(SuperAdminAndLoginRequiredMixin, generic.DetailView):
+    template_name = "agents/user_delete.html"
+    context_object_name = "delete_user"
+    model = User
+
+class UserDeleteView(SuperAdminAndLoginRequiredMixin, generic.DeleteView):
+    template_name = "agents/user_delete_confirm.html"
+    model = User
+
+    def get_success_url(self):
+        return reverse('agents:user-list')
+    
+    def form_valid(self, form):
+        # Retrieve the user object
+        user = self.get_object()
+        print(user)
+        print(user.is_lvl4)
+        # Check if the user has `is_lvl4 = True`
+        if user.is_lvl4:
+            return HttpResponseRedirect(self.get_success_url())
+
+        # Proceed with deletion for other users
+        return super().form_valid(form)
 
 class UserUpdateView(SuperAdminAndLoginRequiredMixin, generic.FormView):
     template_name = "agents/user_update.html"

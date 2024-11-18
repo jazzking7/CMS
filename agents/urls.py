@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
     AgentListView, AgentCreateView, AgentDetailView, 
     AgentUpdateView, AgentDeleteView, ManagerDetailView, ManagerUpdateView, ManagerDeleteView,
-    UserListView, UserCreateView, UserDetailView, UserUpdateView
+    UserListView, UserCreateView, UserDetailView, UserUpdateView, UserDeleteOptionView, UserDeleteView
 )
 
 app_name = 'agents'
@@ -20,4 +20,6 @@ urlpatterns = [
     path('sup/create', UserCreateView.as_view(), name='user-create'),
     path('<int:pk>/sup/detail', UserDetailView.as_view(), name='user-detail'),
     path('<int:pk>/sup/update', UserUpdateView.as_view(), name='user-update'),
+    path('<int:pk>/sup/delete_user_option', UserDeleteOptionView.as_view(), name='user-delete-option'),
+    path('<int:pk>/sup/delete_user', UserDeleteView.as_view(), name='user-delete'),
 ]

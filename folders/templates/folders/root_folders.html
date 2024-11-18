@@ -4,15 +4,19 @@
 
 <section class="text-gray-600 body-font overflow-hidden">
     <div class=" px-3 py-2 mx-auto">
-      <div class="my-4 container divide-y-2 divide-gray-100">
+      <div class="my-2 container divide-y-2 divide-gray-100">
         <div>
             <h1 class="text-3xl text-gray-800 mb-4">文档</h1>
         </div>
 
-        <a href="{% url 'folders:folder-add' %}"><div class="relative py-3 text-blue-800 hover:text-blue-500 cursor-pointer">
-            <h1 class="text-3xl text-gray-800 mb-4">+</h1>
-        </div></a>
-
+        <a href="{% url 'folders:folder-add' %}">
+            <div class="relative py-3 text-blue-800 hover:text-blue-500 cursor-pointer">
+                <div class="inline-flex items-center space-x-2">
+                    <h4 class="text-gray-800 mb-0">文件夹</h4>
+                    <h1 class="text-3xl text-gray-800 mb-0">+</h1>
+                </div>
+            </div>
+        </a>
 
         <div class="grid grid-cols-1 md:grid-cols-5 mb-4 gap-6">
             {% for folder in folders %}
@@ -32,7 +36,10 @@
 
         <a href="{% url 'folders:foldercontent-add' %}">
             <div class="relative py-3 text-blue-800 hover:text-blue-500 cursor-pointer">
-                <h1 class="text-3xl text-gray-800 mb-4">+</h1>
+                <div class="inline-flex items-center space-x-2">
+                    <h4 class="text-gray-800 mb-0">文件</h4>
+                    <h1 class="text-3xl text-gray-800 mb-0">+</h1>
+                </div>
             </div>
         </a>
 

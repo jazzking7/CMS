@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load tailwind_filters %}
+
+{% block content %}
+<div class="max-w-lg mx-auto">
+    <div class="py-5 border-b border-gray-200">
+        <a class="hover:text-blue-500" href="{% url 'agents:user-list' %}">回到用户列表</a>
+    </div>
+    <h1 class="text-3xl text-gray-800">确定要删除该用户? 所有与该用户关联的数据将被清除</h1>
+    <form method="post" class="mt-5">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="w-full text-white bg-blue-500 hover:bg-red-600 px-3 py-2 rounded-md">删除</button>
+    </form>
+    <div class="py-5 mt-5">
+        <a class="hover:text-blue-500" href="{% url 'agents:user-detail' object.pk %}">取消</a>
+    </div>
+</div>
+{% endblock content %}

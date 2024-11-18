@@ -15,6 +15,9 @@
                 <a href="{% url 'agents:user-update' show_user.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">
                     更改信息
                 </a>    
+                <a href="{% url 'agents:user-delete-option' show_user.pk %}" class="flex-grow border-b-2 border-gray-300 py-2 text-lg px-1">
+                    注销用户
+                </a>
             </div>
             <div class="flex border-t border-gray-300 py-2">
                 <span class="text-gray-600">用户名</span>
