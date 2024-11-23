@@ -42,8 +42,8 @@ class Lead(models.Model):
 
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
-    email = models.EmailField()
-    phone_number = models.CharField(max_length=20)
+    email = models.EmailField(null=True, blank=True)
+    phone_number = models.CharField(max_length=20,null=True, blank=True,)
     agent = models.ForeignKey(User, null=True, blank=True, related_name='agent_leads' ,on_delete=models.SET_NULL, default=None)
     manager = models.ForeignKey(User, null=True, blank=True, related_name='manager_leads', on_delete=models.SET_NULL, default=None)
     organisation = models.ForeignKey(UserProfile, on_delete=models.CASCADE)

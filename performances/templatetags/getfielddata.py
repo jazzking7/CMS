@@ -1,5 +1,6 @@
 from django import template
 from leads.models import CaseField, CaseValue
+from datetime import date, datetime
 
 register = template.Library()
 
@@ -9,6 +10,8 @@ def get_field_value(instance, field_name):
     value = getattr(instance, field_name, None)
     
     if value is not None:
+        if isinstance(value, (datetime, date)):
+            value = value.strftime("%Y-%b-%d")
         if field_name == "commission":
             value = str(value) + "%"
         if field_name == "co_commission":
@@ -17,6 +20,19 @@ def get_field_value(instance, field_name):
             if len(value) > 20:
                 value = value[:20]+"..."
         return value
+    
+    if field_name == "Order-ID":
+        # Assuming 'created_at' is the field storing the creation date
+        created_date = instance.date_added.date()
+        same_day_leads = instance.__class__.objects.filter(date_added__date=created_date).order_by('date_added')
+        
+        # Get the index of the current instance in the list of same-day leads (1-based)
+        lead_index = list(same_day_leads).index(instance) + 1
+        
+        # Format the Order-ID: SEIYYMMDD00X
+        company_abbreviation = "SEI"
+        order_id = f"{company_abbreviation}{created_date.strftime('%y%m%d')}{lead_index:03d}"
+        return order_id
     
     # If the attribute is not found, try to get it from CaseValue
     try:

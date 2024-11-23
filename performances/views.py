@@ -362,6 +362,8 @@ class UserPerformanceListView(LoginRequiredMixin, generic.ListView):
                 lead_fields.remove('organisation')
             if "description" in lead_fields:
                 lead_fields.remove('description')
+            if "phone_number" in lead_fields:
+                lead_fields.remove("phone_number")
 
             case_fields = CaseField.objects.filter(user=lead.organisation)
             case_field_names = [field.name for field in case_fields]
@@ -375,7 +377,7 @@ class UserPerformanceListView(LoginRequiredMixin, generic.ListView):
                         # Check lead fields
                         field = lead._meta.get_field(field_name)
                         if isinstance(field, models.DateTimeField):
-                            datetime_fields_info.append({'index': i, 'type': 'datetime'})
+                            datetime_fields_info.append({'index': i, 'type': 'date'})
                         elif isinstance(field, models.DateField):
                             datetime_fields_info.append({'index': i, 'type': 'date'})
                     else:
@@ -385,13 +387,13 @@ class UserPerformanceListView(LoginRequiredMixin, generic.ListView):
                         if case_field.field_type == 'date':
                             datetime_fields_info.append({'index': i, 'type': 'date'})
                         elif case_field.field_type == 'datetime':
-                            datetime_fields_info.append({'index': i, 'type': 'datetime'})
+                            datetime_fields_info.append({'index': i, 'type': 'date'})
                 except FieldDoesNotExist:
                     pass
 
 
             context.update({
-                "lead_fields": combined_fields,
+                "lead_fields": ['Order-ID'] + combined_fields,
                 "datetime_fields_info": json.dumps(datetime_fields_info) 
             })
 
@@ -668,6 +670,8 @@ class personalPerformanceView(LoginRequiredMixin, generic.ListView):
                 lead_fields.remove('organisation')
             if "description" in lead_fields:
                 lead_fields.remove('description')
+            if "phone_number" in lead_fields:
+                lead_fields.remove("phone_number")
 
             case_fields = CaseField.objects.filter(user=lead.organisation)
             case_field_names = [field.name for field in case_fields]
@@ -681,7 +685,7 @@ class personalPerformanceView(LoginRequiredMixin, generic.ListView):
                         # Check lead fields
                         field = lead._meta.get_field(field_name)
                         if isinstance(field, models.DateTimeField):
-                            datetime_fields_info.append({'index': i, 'type': 'datetime'})
+                            datetime_fields_info.append({'index': i, 'type': 'date'})
                         elif isinstance(field, models.DateField):
                             datetime_fields_info.append({'index': i, 'type': 'date'})
                     else:
@@ -691,13 +695,13 @@ class personalPerformanceView(LoginRequiredMixin, generic.ListView):
                         if case_field.field_type == 'date':
                             datetime_fields_info.append({'index': i, 'type': 'date'})
                         elif case_field.field_type == 'datetime':
-                            datetime_fields_info.append({'index': i, 'type': 'datetime'})
+                            datetime_fields_info.append({'index': i, 'type': 'date'})
                 except FieldDoesNotExist:
                     pass
 
 
             context.update({
-                "lead_fields": combined_fields,
+                "lead_fields": ['Order-ID'] +  combined_fields,
                 "datetime_fields_info": json.dumps(datetime_fields_info) 
             })
 

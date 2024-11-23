@@ -102,6 +102,8 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
                 lead_fields.remove('id')
             if "organisation" in lead_fields:
                 lead_fields.remove('organisation')
+            if "phone_number" in lead_fields:
+                lead_fields.remove("phone_number")
 
             case_fields = CaseField.objects.filter(user=lead.organisation)
             case_field_names = [field.name for field in case_fields]
@@ -115,7 +117,7 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
                         # Check lead fields
                         field = lead._meta.get_field(field_name)
                         if isinstance(field, models.DateTimeField):
-                            datetime_fields_info.append({'index': i, 'type': 'datetime'})
+                            datetime_fields_info.append({'index': i, 'type': 'date'})
                         elif isinstance(field, models.DateField):
                             datetime_fields_info.append({'index': i, 'type': 'date'})
                     else:
@@ -125,7 +127,7 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
                         if case_field.field_type == 'date':
                             datetime_fields_info.append({'index': i, 'type': 'date'})
                         elif case_field.field_type == 'datetime':
-                            datetime_fields_info.append({'index': i, 'type': 'datetime'})
+                            datetime_fields_info.append({'index': i, 'type': 'date'})
                 except FieldDoesNotExist:
                     pass
 
@@ -148,7 +150,7 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
         # print(leads_data)
         context.update({
             # "basic_fields": lead_fields,
-            "lead_fields": lead_fields + case_field_names,
+            "lead_fields": ['Order-ID'] + lead_fields + case_field_names,
             "datetime_fields_info": json.dumps(datetime_fields_info) 
             # "lead_list": leads_data
         })

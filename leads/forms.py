@@ -110,11 +110,12 @@ class LeadUpdateForm(forms.ModelForm):
             ('待递交', '待递交'),
             ('取消', '取消'),
         ]
+
+        # Add quote and commission fields for lvl3 users
+        self.fields['quote'] = forms.IntegerField(label='Quote', required=True, initial=instance.quote if instance else None)
         
         if self.user.is_lvl3 or self.user.is_lvl4:
 
-            # Add quote and commission fields for lvl3 users
-            self.fields['quote'] = forms.IntegerField(label='Quote', required=True, initial=instance.quote if instance else None)
             self.fields['commission'] = forms.IntegerField(label='Commission', required=True, initial=instance.commission if instance else None)
             self.fields['co_commission'] = forms.IntegerField(label='Co-commission', required=True, initial=instance.co_commission if instance else None)
 

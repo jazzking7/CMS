@@ -68,9 +68,7 @@
                                         <svg class="flex-shrink-0 h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                             <path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd" />
                                         </svg>
-                                        <span class="ml-2 flex-1 w-0 truncate">
-                                            {{ content.file.name }}
-                                        </span>
+                                        <span class="ml-2 flex-1 w-0 truncate file-name" data-file-path="{{ content.file.name }}"></span>
                                     </div>
                                     <div class="ml-3 flex-shrink-0">
                                         <a href="{{ content.file.url }}" download class="font-medium text-indigo-600 hover:text-indigo-500">
@@ -147,6 +145,22 @@
 
       </div>
     </div>
+
+    <!-- display filename only -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Select all elements with the 'file-name' class
+            const fileNames = document.querySelectorAll(".file-name");
+    
+            // Loop through each file-name element
+            fileNames.forEach((element) => {
+                const filePath = element.getAttribute("data-file-path"); // Get the full file path
+                const fileName = filePath.split("/").pop(); // Extract the filename
+                element.textContent = fileName; // Set the extracted filename as the text
+            });
+        });
+    </script>    
+
   </section>
 
 {% endblock content %}
