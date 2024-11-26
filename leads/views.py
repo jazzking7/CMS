@@ -111,23 +111,24 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
             combined_fields = lead_fields + case_field_names
 
             # Check field types and save index and type if it's DateTimeField or DateField
+            # +1 due to the Order-ID changing the column sorting
             for i, field_name in enumerate(combined_fields):
                 try:
                     if field_name in lead_fields:
                         # Check lead fields
                         field = lead._meta.get_field(field_name)
                         if isinstance(field, models.DateTimeField):
-                            datetime_fields_info.append({'index': i, 'type': 'date'})
+                            datetime_fields_info.append({'index': i+1, 'type': 'date'})
                         elif isinstance(field, models.DateField):
-                            datetime_fields_info.append({'index': i, 'type': 'date'})
+                            datetime_fields_info.append({'index': i+1, 'type': 'date'})
                     else:
                         # Handle case fields if needed
                         # Assuming you might have some way to access field type
                         case_field = CaseField.objects.get(user=lead.organisation, name=field_name)
                         if case_field.field_type == 'date':
-                            datetime_fields_info.append({'index': i, 'type': 'date'})
+                            datetime_fields_info.append({'index': i+1, 'type': 'date'})
                         elif case_field.field_type == 'datetime':
-                            datetime_fields_info.append({'index': i, 'type': 'date'})
+                            datetime_fields_info.append({'index': i+1, 'type': 'date'})
                 except FieldDoesNotExist:
                     pass
 

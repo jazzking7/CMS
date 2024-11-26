@@ -10,8 +10,8 @@ def get_field_value(instance, field_name):
     value = getattr(instance, field_name, None)
     
     if value is not None:
-        if isinstance(value, (datetime, date)):
-            value = value.strftime("%Y-%b-%d")
+        if isinstance(value, datetime):
+            value = value.date()
         if field_name == "commission":
             value = str(value) + "%"
         if field_name == "co_commission":

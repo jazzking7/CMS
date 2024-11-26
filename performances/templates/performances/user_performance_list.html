@@ -298,7 +298,7 @@
                                                 const index = fieldInfo.index;
                                                 const type = fieldInfo.type;
                                                 // let formatStr = type === "datetime" ? "MMM DD YYYY, LT" : "MMM DD YYYY";
-                                                let formatStr = type === "date" ? "YYYY-MMM-DD" : "MMM DD YYYY";
+                                                let formatStr = type === "date" ? "MMM DD YYYY" : "MMM DD YYYY";
                                                 const formattedDate = moment(cells[index].innerHTML, formatStr).format();
                                                 cells[index].setAttribute("data-order", formattedDate);
                                             });

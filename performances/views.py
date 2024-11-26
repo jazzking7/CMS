@@ -377,17 +377,17 @@ class UserPerformanceListView(LoginRequiredMixin, generic.ListView):
                         # Check lead fields
                         field = lead._meta.get_field(field_name)
                         if isinstance(field, models.DateTimeField):
-                            datetime_fields_info.append({'index': i, 'type': 'date'})
+                            datetime_fields_info.append({'index': i+1, 'type': 'date'})
                         elif isinstance(field, models.DateField):
-                            datetime_fields_info.append({'index': i, 'type': 'date'})
+                            datetime_fields_info.append({'index': i+1, 'type': 'date'})
                     else:
                         # Handle case fields if needed
                         # Assuming you might have some way to access field type
                         case_field = CaseField.objects.get(user=lead.organisation, name=field_name)
                         if case_field.field_type == 'date':
-                            datetime_fields_info.append({'index': i, 'type': 'date'})
+                            datetime_fields_info.append({'index': i+1, 'type': 'date'})
                         elif case_field.field_type == 'datetime':
-                            datetime_fields_info.append({'index': i, 'type': 'date'})
+                            datetime_fields_info.append({'index': i+1, 'type': 'date'})
                 except FieldDoesNotExist:
                     pass
 
@@ -685,17 +685,17 @@ class personalPerformanceView(LoginRequiredMixin, generic.ListView):
                         # Check lead fields
                         field = lead._meta.get_field(field_name)
                         if isinstance(field, models.DateTimeField):
-                            datetime_fields_info.append({'index': i, 'type': 'date'})
+                            datetime_fields_info.append({'index': i+1, 'type': 'date'})
                         elif isinstance(field, models.DateField):
-                            datetime_fields_info.append({'index': i, 'type': 'date'})
+                            datetime_fields_info.append({'index': i+1, 'type': 'date'})
                     else:
                         # Handle case fields if needed
                         # Assuming you might have some way to access field type
                         case_field = CaseField.objects.get(user=lead.organisation, name=field_name)
                         if case_field.field_type == 'date':
-                            datetime_fields_info.append({'index': i, 'type': 'date'})
+                            datetime_fields_info.append({'index': i+1, 'type': 'date'})
                         elif case_field.field_type == 'datetime':
-                            datetime_fields_info.append({'index': i, 'type': 'date'})
+                            datetime_fields_info.append({'index': i+1, 'type': 'date'})
                 except FieldDoesNotExist:
                     pass
 

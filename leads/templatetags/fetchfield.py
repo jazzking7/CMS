@@ -10,8 +10,8 @@ def get_field_value(instance, field_name):
     value = getattr(instance, field_name, None)
     
     if value is not None:
-        if isinstance(value, (datetime, date)):
-            value = value.strftime("%Y-%b-%d")
+        if isinstance(value, datetime):
+            value = value.date()
         if field_name == "commission":
             value = str(value) + "%"
         if field_name == "co_commission":
@@ -46,8 +46,7 @@ def get_field_value(instance, field_name):
         elif case_field.field_type == 'number':
             return case_value.value_number
         elif case_field.field_type == 'date':
-            if isinstance(case_value.value_date, (datetime, date)):
-                 return case_value.value_date.strftime("%Y-%b-%d")
+            return case_value.value_date
     except (CaseField.DoesNotExist, CaseValue.DoesNotExist):
         return None
 
