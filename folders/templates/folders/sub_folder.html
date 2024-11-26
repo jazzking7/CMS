@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load custom_filters %}
 
 {% block content %}
 
@@ -82,9 +83,15 @@
                                 </li>
                             </ul>
                         </dd>
+                        {% if content.file.url|contains:".jpg" or content.file.url|contains:".png" %}
                         <div class="sm:col-span-3">
-                            <iframe id="iframe-{{ content.id }}" src="https://docs.google.com/viewer?url={{ content.file.url | urlencode }} &embedded=true" width="100%" height="200" style="border: none;" allow="allow-same-origin;"></iframe>
+                            <img id="image-{{ content.id }}" src="{{ content.file.url | urlencode }}" alt="Image" width="100%" height="200" style="border: none;">
                         </div>
+                        {% else %}
+                            <div class="sm:col-span-3">
+                                <iframe id="iframe-{{ content.id }}" src="https://docs.google.com/viewer?url={{ content.file.url | urlencode }}&embedded=true" width="100%" height="200" style="border: none;" allow="allow-same-origin;"></iframe>
+                            </div>
+                        {% endif %}
                     </div>
                     <script>
                         (function () {
